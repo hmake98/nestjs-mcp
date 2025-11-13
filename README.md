@@ -1,5 +1,7 @@
 # nestjs-mcp
 
+![Statements](https://img.shields.io/badge/statements-98.83%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-83.17%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-97.11%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.79%25-brightgreen.svg?style=flat)
+
 A NestJS package for integrating MCP (Model Context Protocol) servers into your applications. Built on top of the official `@modelcontextprotocol/sdk` (v1.21.1).
 
 ## Features
@@ -27,23 +29,23 @@ import { Module } from '@nestjs/common';
 import { MCPModule } from 'nestjs-mcp';
 
 @Module({
-  imports: [
-    MCPModule.forRoot({
-      serverInfo: {
-        name: 'My MCP Server',
-        version: '1.0.0',
-        capabilities: {
-          tools: { listChanged: true },
-          resources: { subscribe: true },
-          prompts: { listChanged: true },
-        },
-      },
-      autoDiscoverTools: true,
-      autoDiscoverResources: true,
-      autoDiscoverPrompts: true,
-      enableLogging: true,
-    }),
-  ],
+    imports: [
+        MCPModule.forRoot({
+            serverInfo: {
+                name: 'My MCP Server',
+                version: '1.0.0',
+                capabilities: {
+                    tools: { listChanged: true },
+                    resources: { subscribe: true },
+                    prompts: { listChanged: true },
+                },
+            },
+            autoDiscoverTools: true,
+            autoDiscoverResources: true,
+            autoDiscoverPrompts: true,
+            enableLogging: true,
+        }),
+    ],
 })
 export class AppModule {}
 ```
@@ -56,25 +58,35 @@ import { MCPTool, MCPToolWithParams } from 'nestjs-mcp';
 
 @Injectable()
 export class CalculatorService {
-  @MCPToolWithParams({
-    name: 'add',
-    description: 'Add two numbers',
-    parameters: [
-      { name: 'a', type: 'number', description: 'First number', required: true },
-      { name: 'b', type: 'number', description: 'Second number', required: true },
-    ],
-  })
-  async add(params: { a: number; b: number }): Promise<number> {
-    return params.a + params.b;
-  }
+    @MCPToolWithParams({
+        name: 'add',
+        description: 'Add two numbers',
+        parameters: [
+            {
+                name: 'a',
+                type: 'number',
+                description: 'First number',
+                required: true,
+            },
+            {
+                name: 'b',
+                type: 'number',
+                description: 'Second number',
+                required: true,
+            },
+        ],
+    })
+    async add(params: { a: number; b: number }): Promise<number> {
+        return params.a + params.b;
+    }
 
-  @MCPTool({
-    name: 'reverse-string',
-    description: 'Reverse a string',
-  })
-  async reverseString(params: { text: string }): Promise<string> {
-    return params.text.split('').reverse().join('');
-  }
+    @MCPTool({
+        name: 'reverse-string',
+        description: 'Reverse a string',
+    })
+    async reverseString(params: { text: string }): Promise<string> {
+        return params.text.split('').reverse().join('');
+    }
 }
 ```
 
@@ -86,36 +98,36 @@ import { MCPResource, MCPResourceTemplate } from 'nestjs-mcp';
 
 @Injectable()
 export class FileService {
-  // Static resource
-  @MCPResource({
-    uri: 'file:///readme.txt',
-    name: 'README',
-    description: 'Application README file',
-    mimeType: 'text/plain',
-  })
-  async getReadme() {
-    return {
-      uri: 'file:///readme.txt',
-      mimeType: 'text/plain',
-      text: 'Welcome to MCP!',
-    };
-  }
+    // Static resource
+    @MCPResource({
+        uri: 'file:///readme.txt',
+        name: 'README',
+        description: 'Application README file',
+        mimeType: 'text/plain',
+    })
+    async getReadme() {
+        return {
+            uri: 'file:///readme.txt',
+            mimeType: 'text/plain',
+            text: 'Welcome to MCP!',
+        };
+    }
 
-  // Dynamic resource with URI template
-  @MCPResourceTemplate({
-    uriTemplate: 'file:///{filename}',
-    name: 'Dynamic File',
-    description: 'Get any file by name',
-    mimeType: 'text/plain',
-  })
-  async getFile(variables: { filename: string }) {
-    // Variables are extracted from URI pattern
-    return {
-      uri: `file:///${variables.filename}`,
-      mimeType: 'text/plain',
-      text: `Content of ${variables.filename}`,
-    };
-  }
+    // Dynamic resource with URI template
+    @MCPResourceTemplate({
+        uriTemplate: 'file:///{filename}',
+        name: 'Dynamic File',
+        description: 'Get any file by name',
+        mimeType: 'text/plain',
+    })
+    async getFile(variables: { filename: string }) {
+        // Variables are extracted from URI pattern
+        return {
+            uri: `file:///${variables.filename}`,
+            mimeType: 'text/plain',
+            text: `Content of ${variables.filename}`,
+        };
+    }
 }
 ```
 
@@ -127,25 +139,29 @@ import { MCPPrompt } from 'nestjs-mcp';
 
 @Injectable()
 export class PromptService {
-  @MCPPrompt({
-    name: 'code-review',
-    description: 'Generate a code review prompt',
-    arguments: [
-      { name: 'language', description: 'Programming language', required: true },
-      { name: 'code', description: 'Code to review', required: true },
-    ],
-  })
-  async codeReview(args: { language: string; code: string }) {
-    return [
-      {
-        role: 'user',
-        content: {
-          type: 'text',
-          text: `Please review this ${args.language} code:\n\n${args.code}`,
-        },
-      },
-    ];
-  }
+    @MCPPrompt({
+        name: 'code-review',
+        description: 'Generate a code review prompt',
+        arguments: [
+            {
+                name: 'language',
+                description: 'Programming language',
+                required: true,
+            },
+            { name: 'code', description: 'Code to review', required: true },
+        ],
+    })
+    async codeReview(args: { language: string; code: string }) {
+        return [
+            {
+                role: 'user',
+                content: {
+                    type: 'text',
+                    text: `Please review this ${args.language} code:\n\n${args.code}`,
+                },
+            },
+        ];
+    }
 }
 ```
 
@@ -180,12 +196,12 @@ import { MCPSDKService } from 'nestjs-mcp';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
-  constructor(private readonly mcpSdkService: MCPSDKService) {}
+    constructor(private readonly mcpSdkService: MCPSDKService) {}
 
-  async onApplicationBootstrap() {
-    // Connect to stdio transport for CLI usage
-    await this.mcpSdkService.connectStdio();
-  }
+    async onApplicationBootstrap() {
+        // Connect to stdio transport for CLI usage
+        await this.mcpSdkService.connectStdio();
+    }
 }
 ```
 
@@ -197,17 +213,17 @@ This is useful when your MCP server needs to communicate via standard input/outp
 
 ```typescript
 interface MCPModuleOptions {
-  serverInfo: {
-    name: string;
-    version: string;
-    capabilities?: MCPServerCapabilities;
-  };
-  autoDiscoverTools?: boolean;       // Default: true
-  autoDiscoverResources?: boolean;   // Default: true
-  autoDiscoverPrompts?: boolean;     // Default: true
-  globalPrefix?: string;              // Default: 'mcp'
-  enableLogging?: boolean;            // Default: false
-  errorHandler?: (error: Error) => any;
+    serverInfo: {
+        name: string;
+        version: string;
+        capabilities?: MCPServerCapabilities;
+    };
+    autoDiscoverTools?: boolean; // Default: true
+    autoDiscoverResources?: boolean; // Default: true
+    autoDiscoverPrompts?: boolean; // Default: true
+    globalPrefix?: string; // Default: 'mcp'
+    enableLogging?: boolean; // Default: false
+    errorHandler?: (error: Error) => any;
 }
 ```
 
@@ -239,15 +255,15 @@ Configure what features your MCP server supports:
 
 ```typescript
 MCPModule.forRootAsync({
-  imports: [ConfigModule],
-  useFactory: (configService: ConfigService) => ({
-    serverInfo: {
-      name: configService.get('MCP_SERVER_NAME'),
-      version: configService.get('MCP_SERVER_VERSION'),
-    },
-    enableLogging: true,
-  }),
-  inject: [ConfigService],
+    imports: [ConfigModule],
+    useFactory: (configService: ConfigService) => ({
+        serverInfo: {
+            name: configService.get('MCP_SERVER_NAME'),
+            version: configService.get('MCP_SERVER_VERSION'),
+        },
+        enableLogging: true,
+    }),
+    inject: [ConfigService],
 });
 ```
 
@@ -343,9 +359,9 @@ async getPrompt(args: { topic: string }) {
 This package integrates the official `@modelcontextprotocol/sdk` v1.21.1 with NestJS:
 
 - **MCPSDKService**: Wraps the modern `McpServer` class from the SDK
-  - Uses Zod schemas for parameter validation
-  - Automatically converts decorator metadata to SDK-compatible formats
-  - Handles tool, resource, and prompt registration with the SDK
+    - Uses Zod schemas for parameter validation
+    - Automatically converts decorator metadata to SDK-compatible formats
+    - Handles tool, resource, and prompt registration with the SDK
 - **MCPService**: Provides HTTP/JSON-RPC compatibility layer for web clients
 - **MCPRegistryService**: Central registry for managing tool/resource/prompt definitions
 - **MCPDiscoveryService**: Auto-discovers and registers decorated methods at startup
@@ -355,6 +371,7 @@ This package integrates the official `@modelcontextprotocol/sdk` v1.21.1 with Ne
 ### SDK Integration
 
 The package uses the latest `McpServer` API from `@modelcontextprotocol/sdk`:
+
 - ✅ Modern high-level API with clean registration methods
 - ✅ Built-in Zod validation for type safety
 - ✅ Support for stdio and HTTP transports
