@@ -7,6 +7,28 @@ import {
 } from '../../src/utils/zod-helpers';
 
 describe('Zod Helpers', () => {
+    describe('toJSONValue helper', () => {
+        it('should handle null values in default', () => {
+            const schema = z.object({
+                nullable: z.string().nullable().default(null),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].default).toBeNull();
+        });
+
+        it('should handle undefined as no default', () => {
+            const schema = z.object({
+                optional: z.string().optional(),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0]).not.toHaveProperty('default');
+        });
+    });
+
     describe('zodToJsonSchema', () => {
         it('should convert ZodString to JSON Schema', () => {
             const schema = z.string().describe('A string field');
@@ -114,6 +136,109 @@ describe('Zod Helpers', () => {
                 nullable: true,
             });
         });
+
+        it('should handle ZodLiteral', () => {
+            const schema = z.literal('exact-value');
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'string',
+                const: 'exact-value',
+            });
+        });
+
+        it('should handle ZodLiteral with description', () => {
+            const schema = z.literal(42).describe('Magic number');
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'number',
+                const: 42,
+                description: 'Magic number',
+            });
+        });
+
+        it('should handle ZodUnion', () => {
+            const schema = z.union([z.string(), z.number()]);
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toHaveProperty('oneOf');
+            expect(jsonSchema.oneOf).toHaveLength(2);
+            expect(jsonSchema.oneOf).toEqual([
+                { type: 'string' },
+                { type: 'number' },
+            ]);
+        });
+
+        it('should handle ZodOptional by unwrapping', () => {
+            const schema = z.string().optional();
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'string',
+            });
+        });
+
+        it('should handle string with min/max length', () => {
+            const schema = z.string().min(3).max(10);
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'string',
+                minLength: 3,
+                maxLength: 10,
+            });
+        });
+
+        it('should handle array with min/max items', () => {
+            const schema = z.array(z.string()).min(1).max(5);
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'array',
+                items: { type: 'string' },
+                minItems: 1,
+                maxItems: 5,
+            });
+        });
+
+        it('should fallback to object type for unknown schemas', () => {
+            // Create a custom schema type that's not handled
+            const schema = z.any();
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'object',
+            });
+        });
+
+        it('should handle object with nullable fields', () => {
+            const schema = z.object({
+                name: z.string(),
+                middleName: z.string().nullable(),
+            });
+
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema.properties).toHaveProperty('name');
+            expect(jsonSchema.properties).toHaveProperty('middleName');
+            expect(jsonSchema.required).toEqual(['name', 'middleName']);
+        });
+
+        it('should handle object with only optional fields', () => {
+            const schema = z.object({
+                nickname: z.string().optional(),
+                alias: z.string().optional(),
+            });
+
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema.required).toEqual([]);
+            expect(Object.keys(jsonSchema.properties || {})).toEqual([
+                'nickname',
+                'alias',
+            ]);
+        });
     });
 
     describe('zodSchemaToMCPParameters', () => {
@@ -198,6 +323,97 @@ describe('Zod Helpers', () => {
                 name: 'metadata',
                 type: 'object',
                 required: true,
+            });
+        });
+
+        it('should handle nullable fields', () => {
+            const schema = z.object({
+                middleName: z.string().nullable().describe('Middle name'),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0]).toEqual({
+                name: 'middleName',
+                type: 'string',
+                description: 'Middle name',
+                required: true,
+            });
+        });
+
+        it('should handle optional with description preserved', () => {
+            const schema = z.object({
+                nickname: z.string().describe('User nickname').optional(),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0]).toEqual({
+                name: 'nickname',
+                type: 'string',
+                description: 'User nickname',
+                required: false,
+            });
+        });
+
+        it('should handle default with inner description', () => {
+            const schema = z.object({
+                role: z.string().describe('User role').default('user'),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0]).toEqual({
+                name: 'role',
+                type: 'string',
+                description: 'User role',
+                required: false,
+                default: 'user',
+            });
+        });
+
+        it('should handle nullable with inner description', () => {
+            const schema = z.object({
+                suffix: z.string().describe('Name suffix').nullable(),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0]).toEqual({
+                name: 'suffix',
+                type: 'string',
+                description: 'Name suffix',
+                required: true,
+            });
+        });
+
+        it('should handle complex default values', () => {
+            const schema = z.object({
+                config: z.object({ key: z.string() }).default({ key: 'value' }),
+                items: z.array(z.string()).default(['item1']),
+                count: z.number().default(0),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].default).toEqual({ key: 'value' });
+            expect(parameters[1].default).toEqual(['item1']);
+            expect(parameters[2].default).toBe(0);
+        });
+
+        it('should handle enum with default values in enum array', () => {
+            const schema = z.object({
+                priority: z.enum(['low', 'medium', 'high']).default('medium'),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0]).toMatchObject({
+                name: 'priority',
+                type: 'string',
+                enum: ['low', 'medium', 'high'],
+                required: false,
+                default: 'medium',
             });
         });
     });

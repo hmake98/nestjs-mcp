@@ -1,6 +1,6 @@
 # nestjs-mcp
 
-![Statements](https://img.shields.io/badge/statements-95.59%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-81.81%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-96.8%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-95.48%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-98.58%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-86.8%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-97.6%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.54%25-brightgreen.svg?style=flat)
 
 A NestJS library for integrating the Model Context Protocol (MCP) into your applications. Built on top of the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) v1.21.1, this package provides a decorator-based approach to building MCP servers with NestJS.
 

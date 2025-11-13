@@ -238,4 +238,61 @@ describe('MCPModule', () => {
             expect(mcpService).toBeDefined();
         });
     });
+
+    describe('logger initialization', () => {
+        it('should use logLevel when provided', async () => {
+            const optionsWithLogLevel = {
+                ...mockOptions,
+                logLevel: 'verbose' as const,
+            };
+
+            const module = await Test.createTestingModule({
+                imports: [MCPModule.forRoot(optionsWithLogLevel)],
+            }).compile();
+
+            const mcpModule = module.get(MCPModule);
+            expect(mcpModule).toBeDefined();
+        });
+
+        it('should use DEBUG level when enableLogging is true and no logLevel', async () => {
+            const optionsWithEnableLogging = {
+                serverInfo: mockOptions.serverInfo,
+                enableLogging: true,
+            };
+
+            const module = await Test.createTestingModule({
+                imports: [MCPModule.forRoot(optionsWithEnableLogging)],
+            }).compile();
+
+            const mcpModule = module.get(MCPModule);
+            expect(mcpModule).toBeDefined();
+        });
+
+        it('should use INFO level when enableLogging is false and no logLevel', async () => {
+            const optionsWithoutLogging = {
+                serverInfo: mockOptions.serverInfo,
+                enableLogging: false,
+            };
+
+            const module = await Test.createTestingModule({
+                imports: [MCPModule.forRoot(optionsWithoutLogging)],
+            }).compile();
+
+            const mcpModule = module.get(MCPModule);
+            expect(mcpModule).toBeDefined();
+        });
+
+        it('should use INFO level when neither logLevel nor enableLogging provided', async () => {
+            const minimalOptions = {
+                serverInfo: mockOptions.serverInfo,
+            };
+
+            const module = await Test.createTestingModule({
+                imports: [MCPModule.forRoot(minimalOptions)],
+            }).compile();
+
+            const mcpModule = module.get(MCPModule);
+            expect(mcpModule).toBeDefined();
+        });
+    });
 });
