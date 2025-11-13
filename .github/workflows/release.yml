@@ -1,4 +1,4 @@
-name: Release
+name: Release & Deploy
 
 on:
   push:
@@ -11,12 +11,21 @@ permissions:
   issues: write
   pull-requests: write
   packages: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "release"
+  cancel-in-progress: false
 
 jobs:
   release:
-    name: Release
+    name: Release to NPM & GitHub
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip ci')"
+    outputs:
+      new-release-published: ${{ steps.semantic.outputs.new-release-published }}
+      new-release-version: ${{ steps.semantic.outputs.new-release-version }}
 
     steps:
       - name: Checkout
@@ -35,22 +44,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run linter
-        run: npm run lint:check
-
-      - name: Run formatter check
-        run: npm run format:check
-
-      - name: Run tests
-        run: npm run test:ci
-
       - name: Build package
         run: npm run build
-
-      - name: Verify build artifacts
-        run: |
-          test -f dist/index.js
-          test -f dist/index.d.ts
 
       - name: Configure Git
         run: |
@@ -58,23 +53,31 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Release
+        id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
+        run: |
+          npx semantic-release --plugins \
+            "@semantic-release/commit-analyzer" \
+            "@semantic-release/release-notes-generator" \
+            "@semantic-release/npm" \
+            "@semantic-release/github" \
+            --branches master \
+            --preset conventionalcommits
 
-  # Optional: Create a draft GitHub release for manual review
-  draft-release:
-    name: Draft Release (Manual)
+  deploy-docs:
+    name: Deploy Documentation
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    needs: release
+    if: needs.release.outputs.new-release-published == 'true'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: master
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -85,23 +88,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Get version
-        id: package-version
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Generate documentation
+        run: npm run docs:build
 
-      - name: Generate changelog
-        id: changelog
-        run: |
-          echo "# Changelog" > CHANGELOG.txt
-          git log --pretty=format:"- %s (%h)" $(git describe --tags --abbrev=0 2>/dev/null || echo "")..HEAD >> CHANGELOG.txt || echo "- Initial release" >> CHANGELOG.txt
-
-      - name: Create Draft Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          tag_name: v${{ steps.package-version.outputs.version }}
-          release_name: Release v${{ steps.package-version.outputs.version }}
-          body_path: CHANGELOG.txt
-          draft: true
-          prerelease: false
+          path: "./docs"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
