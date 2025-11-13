@@ -382,14 +382,21 @@ describe('Zod Integration', () => {
             const response = await service.handleRequest(request);
 
             expect(response.error).toBeUndefined();
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const tools = (response.result as any).tools;
-            const calculateTool = tools.find(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (t: any) => t.name === 'calculate',
-            );
+            const result = response.result as {
+                tools: Array<{
+                    name: string;
+                    inputSchema: {
+                        type: string;
+                        properties: Record<string, unknown>;
+                    };
+                }>;
+            };
+            const tools = result.tools;
+            const calculateTool = tools.find((t) => t.name === 'calculate');
 
             expect(calculateTool).toBeDefined();
+            if (!calculateTool) return; // Type guard for TypeScript
+
             expect(calculateTool.inputSchema).toBeDefined();
             expect(calculateTool.inputSchema.type).toBe('object');
             expect(calculateTool.inputSchema.properties).toBeDefined();

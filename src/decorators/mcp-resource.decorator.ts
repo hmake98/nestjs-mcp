@@ -11,8 +11,7 @@ import {
  */
 export function MCPResource(metadata: MCPResourceMetadata): MethodDecorator {
     return (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        target: any,
+        target: object,
         propertyKey: string | symbol,
         descriptor: PropertyDescriptor,
     ) => {
@@ -34,8 +33,7 @@ export function MCPResourceTemplate(
     metadata: MCPResourceTemplateMetadata,
 ): MethodDecorator {
     return (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        target: any,
+        target: object,
         propertyKey: string | symbol,
         descriptor: PropertyDescriptor,
     ) => {

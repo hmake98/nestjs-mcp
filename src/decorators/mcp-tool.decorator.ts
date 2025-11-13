@@ -12,8 +12,7 @@ import {
  */
 export function MCPTool(metadata: MCPToolMetadata): MethodDecorator {
     return (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        target: any,
+        target: object,
         propertyKey: string | symbol,
         descriptor: PropertyDescriptor,
     ) => {
@@ -34,8 +33,7 @@ export function MCPToolParams(
     parameters: Omit<MCPToolParameter, 'name'>[],
 ): MethodDecorator {
     return (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        target: any,
+        target: object,
         propertyKey: string | symbol,
         descriptor: PropertyDescriptor,
     ) => {
@@ -52,8 +50,7 @@ export function MCPToolWithParams(
     metadata: MCPToolWithParamsMetadata,
 ): MethodDecorator {
     return (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        target: any,
+        target: object,
         propertyKey: string | symbol,
         descriptor: PropertyDescriptor,
     ) => {

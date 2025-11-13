@@ -13,8 +13,7 @@ import {
 // Test provider with decorated methods
 @Injectable()
 class TestProvider {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any;
+    [key: string]: unknown;
 
     testTool() {
         return 'test';

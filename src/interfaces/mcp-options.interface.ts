@@ -1,4 +1,4 @@
-import { ModuleMetadata, Type } from '@nestjs/common';
+import { ModuleMetadata, Type, Abstract } from '@nestjs/common';
 import { MCPServerInfo, JSONValue } from './mcp-protocol.interface';
 
 /**
@@ -55,9 +55,7 @@ export interface MCPModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
     useExisting?: Type<MCPOptionsFactory>;
     useClass?: Type<MCPOptionsFactory>;
     useFactory?: (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ...args: any[]
+        ...args: unknown[]
     ) => Promise<MCPModuleOptions> | MCPModuleOptions;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    inject?: any[];
+    inject?: (string | symbol | Type | Abstract<unknown>)[];
 }

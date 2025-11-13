@@ -28,6 +28,7 @@ jest.mock('@modelcontextprotocol/sdk/server/stdio.js', () => ({
 describe('MCPSDKService', () => {
     let service: MCPSDKService;
     let registryService: MCPRegistryService;
+    // Mock server object - using any for test flexibility
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let mockMcpServer: any;
     const mockOptions: MCPModuleOptions = {

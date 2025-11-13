@@ -8,8 +8,7 @@ import { MCPPromptMetadata } from 'src/interfaces/mcp-prompt.interface';
  */
 export function MCPPrompt(metadata: MCPPromptMetadata): MethodDecorator {
     return (
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        target: any,
+        target: object,
         propertyKey: string | symbol,
         descriptor: PropertyDescriptor,
     ) => {

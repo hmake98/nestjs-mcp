@@ -1,29 +1,63 @@
 import { z } from 'zod';
-import { MCPToolParameter } from '../interfaces';
+import { MCPToolParameter, JSONValue } from '../interfaces';
+
+/**
+ * JSON Schema type definition
+ */
+type JSONSchema = {
+    type?: string;
+    description?: string;
+    properties?: Record<string, JSONSchema>;
+    required?: string[];
+    items?: JSONSchema;
+    enum?: unknown[];
+    const?: unknown;
+    oneOf?: JSONSchema[];
+    nullable?: boolean;
+    default?: unknown;
+    minimum?: number;
+    maximum?: number;
+    minLength?: number;
+    maxLength?: number;
+    minItems?: number;
+    maxItems?: number;
+    additionalProperties?: boolean;
+};
+
+/**
+ * Convert unknown value to JSONValue (runtime cast with basic validation)
+ */
+function toJSONValue(value: unknown): JSONValue {
+    if (
+        value === null ||
+        typeof value === 'string' ||
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+        return value;
+    }
+    if (Array.isArray(value)) {
+        return value.map(toJSONValue) as JSONValue[];
+    }
+    if (typeof value === 'object') {
+        return value as Record<string, JSONValue>;
+    }
+    return null;
+}
 
 /**
  * Convert a Zod schema to JSON Schema format compatible with MCP protocol
  * This is a simplified converter that handles common Zod types
  */
-export function zodToJsonSchema(
-    schema: z.ZodTypeAny,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
+export function zodToJsonSchema(schema: z.ZodTypeAny): JSONSchema {
     if (schema instanceof z.ZodString) {
-        const jsonSchema: {
-            type: string;
-            description?: string;
-            enum?: string[];
-            minLength?: number;
-            maxLength?: number;
-        } = { type: 'string' };
+        const jsonSchema: JSONSchema = { type: 'string' };
         if (schema.description) {
             jsonSchema.description = schema.description;
         }
-        // Handle enums
+        // Handle string validations
         const checks = (schema as z.ZodString)._def.checks || [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        checks.forEach((check: any) => {
+        checks.forEach((check) => {
             if (check.kind === 'min') {
                 jsonSchema.minLength = check.value;
             } else if (check.kind === 'max') {
@@ -44,8 +78,7 @@ export function zodToJsonSchema(
             jsonSchema.description = schema.description;
         }
         const checks = (schema as z.ZodNumber)._def.checks || [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        checks.forEach((check: any) => {
+        checks.forEach((check) => {
             if (check.kind === 'min') {
                 jsonSchema.minimum = check.value;
             } else if (check.kind === 'max') {
@@ -66,13 +99,7 @@ export function zodToJsonSchema(
     }
 
     if (schema instanceof z.ZodArray) {
-        const jsonSchema: {
-            type: string;
-            description?: string;
-            items?: unknown;
-            minItems?: number;
-            maxItems?: number;
-        } = {
+        const jsonSchema: JSONSchema = {
             type: 'array',
             items: zodToJsonSchema(schema.element),
         };
@@ -92,8 +119,7 @@ export function zodToJsonSchema(
 
     if (schema instanceof z.ZodObject) {
         const shape = schema.shape;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const properties: Record<string, any> = {};
+        const properties: Record<string, JSONSchema> = {};
         const required: string[] = [];
 
         Object.keys(shape).forEach((key) => {
@@ -117,13 +143,7 @@ export function zodToJsonSchema(
             }
         });
 
-        const jsonSchema: {
-            type: string;
-            description?: string;
-            properties: unknown;
-            required: string[];
-            additionalProperties?: boolean;
-        } = {
+        const jsonSchema: JSONSchema = {
             type: 'object',
             properties,
             required,
@@ -272,13 +292,11 @@ export function zodSchemaToMCPParameters(
         };
 
         if (defaultValue !== undefined) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            parameter.default = defaultValue as any;
+            parameter.default = toJSONValue(defaultValue);
         }
 
         if (enumValues) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            parameter.enum = enumValues as any[];
+            parameter.enum = enumValues.map(toJSONValue);
         }
 
         parameters.push(parameter);
