@@ -7,13 +7,17 @@ import { MCPPromptMetadata } from 'src/interfaces/mcp-prompt.interface';
  * @param metadata Prompt metadata
  */
 export function MCPPrompt(metadata: MCPPromptMetadata): MethodDecorator {
-  return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    target: any,
-    propertyKey: string | symbol,
-    descriptor: PropertyDescriptor,
-  ) => {
-    SetMetadata(MCP_PROMPT_METADATA, metadata)(target, propertyKey, descriptor);
-    return descriptor;
-  };
+    return (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        target: any,
+        propertyKey: string | symbol,
+        descriptor: PropertyDescriptor,
+    ) => {
+        SetMetadata(MCP_PROMPT_METADATA, metadata)(
+            target,
+            propertyKey,
+            descriptor,
+        );
+        return descriptor;
+    };
 }

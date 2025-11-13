@@ -1,5 +1,5 @@
 /**
- * @nestjs-mcp/core - NestJS package for integrating MCP (Model Context Protocol) servers
+ * nestjs-mcp - NestJS package for integrating MCP (Model Context Protocol) servers
  */
 
 // Modules
