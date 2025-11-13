@@ -68,6 +68,18 @@ export interface MCPToolDefinition {
      * If provided, input will be validated before calling the handler
      */
     schema?: z.ZodObject<z.ZodRawShape>;
+    /**
+     * Version of the tool (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation status - true if deprecated
+     */
+    deprecated?: boolean;
+    /**
+     * Deprecation message with migration guidance
+     */
+    deprecationMessage?: string;
 }
 
 export interface MCPToolResult {
@@ -88,6 +100,18 @@ export interface MCPResourceInfo {
     name: string;
     description?: string;
     mimeType?: string;
+    /**
+     * Version of the resource (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation status - true if deprecated
+     */
+    deprecated?: boolean;
+    /**
+     * Deprecation message with migration guidance
+     */
+    deprecationMessage?: string;
 }
 
 export interface MCPResourceContent {
@@ -102,6 +126,18 @@ export interface MCPResourceTemplateInfo {
     name: string;
     description?: string;
     mimeType?: string;
+    /**
+     * Version of the resource template (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation status - true if deprecated
+     */
+    deprecated?: boolean;
+    /**
+     * Deprecation message with migration guidance
+     */
+    deprecationMessage?: string;
 }
 
 /**
@@ -115,6 +151,18 @@ export interface MCPPromptInfo {
         description?: string;
         required?: boolean;
     }>;
+    /**
+     * Version of the prompt (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation status - true if deprecated
+     */
+    deprecated?: boolean;
+    /**
+     * Deprecation message with migration guidance
+     */
+    deprecationMessage?: string;
 }
 
 export interface MCPPromptMessage {
@@ -201,6 +249,18 @@ export interface DiscoveredMCPResource {
      * Optional Zod schema for runtime validation of URI template variables
      */
     schema?: z.ZodObject<z.ZodRawShape>;
+    /**
+     * Version of the resource (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation status - true if deprecated
+     */
+    deprecated?: boolean;
+    /**
+     * Deprecation message with migration guidance
+     */
+    deprecationMessage?: string;
 }
 
 /**
@@ -219,4 +279,16 @@ export interface DiscoveredMCPPrompt {
      * Optional Zod schema for runtime validation of prompt arguments
      */
     schema?: z.ZodObject<z.ZodRawShape>;
+    /**
+     * Version of the prompt (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation status - true if deprecated
+     */
+    deprecated?: boolean;
+    /**
+     * Deprecation message with migration guidance
+     */
+    deprecationMessage?: string;
 }

@@ -70,6 +70,13 @@ export class MCPDiscoveryService {
                         parameters,
                         handler: method,
                         schema: toolMetadata.schema, // Store schema for runtime validation
+                        version: toolMetadata.version,
+                        deprecated: toolMetadata.deprecation?.deprecated,
+                        deprecationMessage: toolMetadata.deprecation?.message
+                            ? this.buildDeprecationMessage(
+                                  toolMetadata.deprecation,
+                              )
+                            : undefined,
                     });
                 }
             });
@@ -106,6 +113,14 @@ export class MCPDiscoveryService {
                     resources.push({
                         ...resourceMetadata,
                         handler: method,
+                        version: resourceMetadata.version,
+                        deprecated: resourceMetadata.deprecation?.deprecated,
+                        deprecationMessage: resourceMetadata.deprecation
+                            ?.message
+                            ? this.buildDeprecationMessage(
+                                  resourceMetadata.deprecation,
+                              )
+                            : undefined,
                     });
                 }
             });
@@ -168,6 +183,13 @@ export class MCPDiscoveryService {
                         arguments: arguments_,
                         handler: method,
                         schema: promptMetadata.schema, // Store schema for runtime validation
+                        version: promptMetadata.version,
+                        deprecated: promptMetadata.deprecation?.deprecated,
+                        deprecationMessage: promptMetadata.deprecation?.message
+                            ? this.buildDeprecationMessage(
+                                  promptMetadata.deprecation,
+                              )
+                            : undefined,
                     });
                 }
             });
@@ -213,5 +235,32 @@ export class MCPDiscoveryService {
             .split(',')
             .map((param) => param.trim().split('=')[0].trim())
             .filter((param) => param && param !== '');
+    }
+
+    /**
+     * Build deprecation message from deprecation info
+     */
+    private buildDeprecationMessage(deprecation: {
+        deprecated: boolean;
+        message?: string;
+        since?: string;
+        removeIn?: string;
+        replacedBy?: string;
+    }): string {
+        let msg = deprecation.message || 'This item is deprecated.';
+
+        if (deprecation.since) {
+            msg += ` Deprecated since ${deprecation.since}.`;
+        }
+
+        if (deprecation.removeIn) {
+            msg += ` Will be removed in ${deprecation.removeIn}.`;
+        }
+
+        if (deprecation.replacedBy) {
+            msg += ` Use '${deprecation.replacedBy}' instead.`;
+        }
+
+        return msg;
     }
 }

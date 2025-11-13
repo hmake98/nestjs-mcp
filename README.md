@@ -1,6 +1,6 @@
 # nestjs-mcp
 
-![Statements](https://img.shields.io/badge/statements-98.58%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-86.8%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-97.6%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.54%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-98.65%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-86.75%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-97.61%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.62%25-brightgreen.svg?style=flat)
 
 A NestJS library for integrating the Model Context Protocol (MCP) into your applications. Built on top of the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) v1.21.1, this package provides a decorator-based approach to building MCP servers with NestJS.
 
@@ -13,6 +13,7 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
 - [Decorators](#decorators)
+- [Versioning & Deprecation](#versioning--deprecation)
 - [Transport Options](#transport-options)
 - [API Reference](#api-reference)
 - [Architecture](#architecture)
@@ -27,6 +28,7 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 - 🌐 **HTTP/JSON-RPC Support**: Built-in HTTP controller for MCP protocol communication
 - 📦 **Official SDK Integration**: Powered by `@modelcontextprotocol/sdk` v1.21.1 with modern `McpServer` API
 - 🔧 **TypeScript First**: Full type safety and IntelliSense support with Zod schema validation
+- 📌 **Versioning & Deprecation**: Track versions and manage API evolution with built-in deprecation support
 - 🎨 **Flexible Configuration**: Sync and async module configuration options
 - 📝 **Logging Support**: Configurable log levels (error, warn, info, debug, verbose)
 - 🚀 **Production Ready**: Built with NestJS best practices and comprehensive test coverage
@@ -680,6 +682,195 @@ async explainCode(args: { code: string; language: string; level?: string }) {
   ];
 }
 ```
+
+## Versioning & Deprecation
+
+The library supports versioning and deprecation tracking for tools, resources, and prompts. This helps you manage API evolution and provide clear migration paths for consumers.
+
+### Version Tracking
+
+Add a `version` field to any decorator to track the version of your MCP items:
+
+```typescript
+@MCPTool({
+    name: 'data-processor',
+    description: 'Process data with advanced algorithms',
+    schema: z.object({ data: z.string() }),
+    version: '2.0.0', // Add version information
+})
+async processData({ data }: { data: string }) {
+    return { processed: this.processV2(data) };
+}
+```
+
+### Deprecation Support
+
+Mark items as deprecated with detailed migration information:
+
+```typescript
+@MCPTool({
+    name: 'legacy-calculator',
+    description: 'Old calculation method',
+    schema: z.object({ value: z.number() }),
+    version: '1.0.0',
+    deprecation: {
+        deprecated: true,
+        message: 'This tool uses outdated algorithms',
+        since: '1.5.0',
+        removeIn: '3.0.0',
+        replacedBy: 'advanced-calculator',
+    },
+})
+async legacyCalculate({ value }: { value: number }) {
+    return value * 2;
+}
+```
+
+### Deprecation Options
+
+```typescript
+deprecation?: {
+  deprecated: boolean;      // Whether the item is deprecated (required)
+  message?: string;         // Custom deprecation message
+  since?: string;           // Version when deprecated
+  removeIn?: string;        // Version when it will be removed
+  replacedBy?: string;      // Name of replacement item
+}
+```
+
+### Runtime Behavior
+
+When deprecated items are used:
+
+1. **Automatic Warnings**: The library logs a warning when a deprecated item is called
+2. **Client Information**: Deprecation details are included in list responses
+3. **Continued Functionality**: Deprecated items still work normally
+
+**Example Deprecation Warning:**
+
+```
+[Warn] Tool 'legacy-calculator' is deprecated. This tool uses outdated algorithms. Deprecated since 1.5.0. Will be removed in 3.0.0. Use 'advanced-calculator' instead.
+```
+
+### List Response with Version/Deprecation
+
+When clients list tools, resources, or prompts, they receive version and deprecation information:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tools": [
+      {
+        "name": "advanced-calculator",
+        "description": "Modern calculation algorithms",
+        "inputSchema": {...},
+        "version": "2.0.0"
+      },
+      {
+        "name": "legacy-calculator",
+        "description": "Old calculation method",
+        "inputSchema": {...},
+        "version": "1.0.0",
+        "deprecated": true,
+        "deprecationMessage": "This tool uses outdated algorithms. Deprecated since 1.5.0. Will be removed in 3.0.0. Use 'advanced-calculator' instead."
+      }
+    ]
+  }
+}
+```
+
+### Full Example with All MCP Types
+
+```typescript
+@Injectable()
+export class VersionedService {
+    // Current tool
+    @MCPTool({
+        name: 'current-api',
+        description: 'Latest API version',
+        schema: z.object({ input: z.string() }),
+        version: '3.0.0',
+    })
+    async currentApi({ input }: { input: string }) {
+        return { result: this.processV3(input) };
+    }
+
+    // Deprecated tool
+    @MCPTool({
+        name: 'legacy-api',
+        description: 'Legacy API endpoint',
+        schema: z.object({ input: z.string() }),
+        version: '1.0.0',
+        deprecation: {
+            deprecated: true,
+            message: 'Use the new API for better performance',
+            since: '2.0.0',
+            removeIn: '4.0.0',
+            replacedBy: 'current-api',
+        },
+    })
+    async legacyApi({ input }: { input: string }) {
+        return { result: this.processV1(input) };
+    }
+
+    // Deprecated resource
+    @MCPResource({
+        uri: 'file://old-config',
+        name: 'Old Configuration',
+        description: 'Legacy configuration format',
+        version: '1.0.0',
+        deprecation: {
+            deprecated: true,
+            message: 'Configuration format has been updated',
+            since: '2.0.0',
+            replacedBy: 'file://new-config',
+        },
+    })
+    async getOldConfig() {
+        return {
+            uri: 'file://old-config',
+            mimeType: 'application/json',
+            text: JSON.stringify({ legacy: true }),
+        };
+    }
+
+    // Deprecated prompt
+    @MCPPrompt({
+        name: 'old-prompt-template',
+        description: 'Legacy prompt structure',
+        schema: z.object({ topic: z.string() }),
+        version: '1.0.0',
+        deprecation: {
+            deprecated: true,
+            message: 'Prompt format has been improved',
+            since: '1.5.0',
+            removeIn: '2.0.0',
+            replacedBy: 'new-prompt-template',
+        },
+    })
+    async getOldPrompt({ topic }: { topic: string }) {
+        return [
+            {
+                role: 'user' as const,
+                content: {
+                    type: 'text' as const,
+                    text: `Tell me about ${topic}`,
+                },
+            },
+        ];
+    }
+}
+```
+
+### Best Practices
+
+1. **Semantic Versioning**: Use semver format (e.g., `1.0.0`, `2.1.3`) for consistency
+2. **Clear Messages**: Provide helpful deprecation messages explaining why and what to use instead
+3. **Grace Period**: Give users time to migrate by specifying `removeIn` version
+4. **Documentation**: Always specify `replacedBy` when there's a direct replacement
+5. **Gradual Migration**: Don't remove deprecated items immediately; keep them for several versions
 
 ## Transport Options
 

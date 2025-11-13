@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DeprecationInfo } from './mcp-tool.interface';
 
 /**
  * Metadata for MCP resource
@@ -13,6 +14,14 @@ export interface MCPResourceMetadata {
      * Use this for static resources that may accept query parameters
      */
     schema?: z.ZodObject<z.ZodRawShape>;
+    /**
+     * Version of the resource (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation information
+     */
+    deprecation?: DeprecationInfo;
 }
 
 /**
@@ -28,4 +37,12 @@ export interface MCPResourceTemplateMetadata {
      * This ensures that extracted variables from the URI match expected types
      */
     schema?: z.ZodObject<z.ZodRawShape>;
+    /**
+     * Version of the resource template (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation information
+     */
+    deprecation?: DeprecationInfo;
 }

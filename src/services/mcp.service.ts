@@ -147,11 +147,31 @@ export class MCPService {
                                   .map((p) => p.name),
                           };
 
-                    return {
+                    const result: {
+                        name: string;
+                        description: string;
+                        inputSchema: unknown;
+                        version?: string;
+                        deprecated?: boolean;
+                        deprecationMessage?: string;
+                    } = {
                         name: tool.name,
                         description: tool.description,
                         inputSchema,
                     };
+
+                    // Add version and deprecation info if present
+                    if (tool.version) {
+                        result.version = tool.version;
+                    }
+                    if (tool.deprecated) {
+                        result.deprecated = tool.deprecated;
+                    }
+                    if (tool.deprecationMessage) {
+                        result.deprecationMessage = tool.deprecationMessage;
+                    }
+
+                    return result;
                 }),
             },
         };
@@ -183,6 +203,13 @@ export class MCPService {
                 request.id,
                 MCPErrorCode.METHOD_NOT_FOUND,
                 `Tool not found: ${name}`,
+            );
+        }
+
+        // Log deprecation warning if tool is deprecated
+        if (tool.deprecated) {
+            this.logger.warn(
+                `Tool '${name}' is deprecated. ${tool.deprecationMessage || ''}`,
             );
         }
 
@@ -236,12 +263,35 @@ export class MCPService {
             jsonrpc: '2.0',
             id: request.id,
             result: {
-                resources: resources.map((resource) => ({
-                    uri: resource.uri || resource.uriTemplate,
-                    name: resource.name,
-                    description: resource.description,
-                    mimeType: resource.mimeType,
-                })),
+                resources: resources.map((resource) => {
+                    const result: {
+                        uri?: string;
+                        name: string;
+                        description?: string;
+                        mimeType?: string;
+                        version?: string;
+                        deprecated?: boolean;
+                        deprecationMessage?: string;
+                    } = {
+                        uri: resource.uri || resource.uriTemplate,
+                        name: resource.name,
+                        description: resource.description,
+                        mimeType: resource.mimeType,
+                    };
+
+                    // Add version and deprecation info if present
+                    if (resource.version) {
+                        result.version = resource.version;
+                    }
+                    if (resource.deprecated) {
+                        result.deprecated = resource.deprecated;
+                    }
+                    if (resource.deprecationMessage) {
+                        result.deprecationMessage = resource.deprecationMessage;
+                    }
+
+                    return result;
+                }),
             },
         };
     }
@@ -274,6 +324,13 @@ export class MCPService {
                 request.id,
                 MCPErrorCode.METHOD_NOT_FOUND,
                 `Resource not found: ${uri}`,
+            );
+        }
+
+        // Log deprecation warning if resource is deprecated
+        if (resource.deprecated) {
+            this.logger.warn(
+                `Resource '${uri}' is deprecated. ${resource.deprecationMessage || ''}`,
             );
         }
 
@@ -326,11 +383,37 @@ export class MCPService {
             jsonrpc: '2.0',
             id: request.id,
             result: {
-                prompts: prompts.map((prompt) => ({
-                    name: prompt.name,
-                    description: prompt.description,
-                    arguments: prompt.arguments,
-                })),
+                prompts: prompts.map((prompt) => {
+                    const result: {
+                        name: string;
+                        description?: string;
+                        arguments?: Array<{
+                            name: string;
+                            description?: string;
+                            required?: boolean;
+                        }>;
+                        version?: string;
+                        deprecated?: boolean;
+                        deprecationMessage?: string;
+                    } = {
+                        name: prompt.name,
+                        description: prompt.description,
+                        arguments: prompt.arguments,
+                    };
+
+                    // Add version and deprecation info if present
+                    if (prompt.version) {
+                        result.version = prompt.version;
+                    }
+                    if (prompt.deprecated) {
+                        result.deprecated = prompt.deprecated;
+                    }
+                    if (prompt.deprecationMessage) {
+                        result.deprecationMessage = prompt.deprecationMessage;
+                    }
+
+                    return result;
+                }),
             },
         };
     }
@@ -361,6 +444,13 @@ export class MCPService {
                 request.id,
                 MCPErrorCode.METHOD_NOT_FOUND,
                 `Prompt not found: ${name}`,
+            );
+        }
+
+        // Log deprecation warning if prompt is deprecated
+        if (prompt.deprecated) {
+            this.logger.warn(
+                `Prompt '${name}' is deprecated. ${prompt.deprecationMessage || ''}`,
             );
         }
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DeprecationInfo } from './mcp-tool.interface';
 
 /**
  * Metadata for MCP prompt
@@ -20,4 +21,12 @@ export interface MCPPromptMetadata {
      * Preferred over 'arguments' for type-safe validation
      */
     schema?: z.ZodObject<z.ZodRawShape>;
+    /**
+     * Version of the prompt (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation information
+     */
+    deprecation?: DeprecationInfo;
 }

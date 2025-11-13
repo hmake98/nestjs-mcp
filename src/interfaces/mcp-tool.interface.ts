@@ -2,6 +2,32 @@ import { z } from 'zod';
 import { MCPToolParameter } from './mcp-protocol.interface';
 
 /**
+ * Deprecation information for MCP items
+ */
+export interface DeprecationInfo {
+    /**
+     * Whether the item is deprecated
+     */
+    deprecated: boolean;
+    /**
+     * Deprecation message explaining why and what to use instead
+     */
+    message?: string;
+    /**
+     * Version when the item was deprecated
+     */
+    since?: string;
+    /**
+     * Version when the item will be removed
+     */
+    removeIn?: string;
+    /**
+     * Replacement item name/identifier
+     */
+    replacedBy?: string;
+}
+
+/**
  * Metadata for MCP tool
  */
 export interface MCPToolMetadata {
@@ -12,6 +38,14 @@ export interface MCPToolMetadata {
      * If provided, this will be used for runtime validation and JSON Schema generation
      */
     schema?: z.ZodObject<z.ZodRawShape>;
+    /**
+     * Version of the tool (e.g., '1.0.0', 'v2', '2023-11-01')
+     */
+    version?: string;
+    /**
+     * Deprecation information
+     */
+    deprecation?: DeprecationInfo;
 }
 
 /**
