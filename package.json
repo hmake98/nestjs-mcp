@@ -10,12 +10,7 @@
     "scripts": {
         "build": "rimraf dist && tsc -p tsconfig.json",
         "clean": "rimraf dist",
-        "version": "npm run fix-all && git add -A src",
-        "postversion": "git push && git push --tags",
         "prebuild": "npm run clean && npm run fix-all",
-        "publish:major": "npm version major && npm publish",
-        "publish:minor": "npm version minor && npm publish",
-        "publish:patch": "npm version patch && npm publish",
         "type-check": "tsc --noEmit",
         "fix-all": "npm run format && npm run lint",
         "test": "jest --coverage --passWithNoTests --forceExit",
