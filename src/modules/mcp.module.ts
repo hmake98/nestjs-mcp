@@ -17,6 +17,7 @@ import {
     MCPRegistryService,
     MCPDiscoveryService,
     MCPSDKService,
+    MCPExecutionService,
 } from '../services';
 import { MCPController } from '../controllers';
 import { MCPLogger, LogLevel } from '../utils';
@@ -57,6 +58,7 @@ export class MCPModule implements OnModuleInit {
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
+                MCPExecutionService,
                 MCPService,
             ],
             exports: [
@@ -64,6 +66,7 @@ export class MCPModule implements OnModuleInit {
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
+                MCPExecutionService,
             ],
         };
     }
@@ -81,6 +84,7 @@ export class MCPModule implements OnModuleInit {
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
+                MCPExecutionService,
                 MCPService,
             ],
             exports: [
@@ -88,6 +92,7 @@ export class MCPModule implements OnModuleInit {
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
+                MCPExecutionService,
             ],
         };
     }
@@ -104,6 +109,7 @@ export class MCPModule implements OnModuleInit {
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
+                MCPExecutionService,
                 MCPService,
             ],
             exports: [
@@ -111,6 +117,7 @@ export class MCPModule implements OnModuleInit {
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
+                MCPExecutionService,
             ],
         };
     }

@@ -512,4 +512,44 @@ describe('Zod Helpers', () => {
             expect(invalidResult.success).toBe(false);
         });
     });
+
+    describe('zodSchemaToMCPParameters - description inheritance', () => {
+        it('should inherit description from inner schema of optional when outer has no description', () => {
+            // This triggers line 245 - optional without own description, inner has description
+            const innerSchema = z.string().describe('Inner description');
+            const schema = z.object({
+                field: innerSchema.optional(),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].description).toBe('Inner description');
+            expect(parameters[0].required).toBe(false);
+        });
+
+        it('should inherit description from inner schema of default when outer has no description', () => {
+            // This triggers line 256 - default without own description, inner has description
+            const innerSchema = z.string().describe('Inner description');
+            const schema = z.object({
+                field: innerSchema.default('test'),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].description).toBe('Inner description');
+            expect(parameters[0].default).toBe('test');
+        });
+
+        it('should inherit description from inner schema of nullable when outer has no description', () => {
+            // This triggers line 265 - nullable without own description, inner has description
+            const innerSchema = z.string().describe('Inner description');
+            const schema = z.object({
+                field: innerSchema.nullable(),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].description).toBe('Inner description');
+        });
+    });
 });

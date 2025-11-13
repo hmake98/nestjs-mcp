@@ -4,7 +4,7 @@ import { MCPToolParameter } from '../interfaces';
 import {
     MCPToolMetadata,
     MCPToolWithParamsMetadata,
-} from 'src/interfaces/mcp-tool.interface';
+} from '../interfaces/mcp-tool.interface';
 
 /**
  * Decorator to mark a method as an MCP tool

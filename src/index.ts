@@ -23,5 +23,11 @@ export * from './constants';
 // Utilities
 export * from './utils';
 
-// Utils
-export * from './utils';
+// Transport Adapters
+export * from './transports';
+
+// Guards
+export * from './guards';
+
+// Interceptors
+export * from './interceptors';

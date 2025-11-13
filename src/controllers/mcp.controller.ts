@@ -6,7 +6,12 @@ import {
     HttpStatus,
     Logger,
     Inject,
+    Get,
+    Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { MCPService } from '../services';
 import { MCPRequest, MCPResponse, MCPModuleOptions } from '../interfaces';
 import { MCP_MODULE_OPTIONS } from '../constants';
@@ -66,5 +71,31 @@ export class MCPController {
         );
 
         return responses;
+    }
+
+    @Get('playground')
+    getPlayground(@Res() res: Response) {
+        if (this.options.enableLogging) {
+            this.logger.log('Serving MCP Playground UI');
+        }
+
+        try {
+            // Resolve from project root to src/views/playground.html
+            const playgroundPath = join(
+                /* eslint-disable-next-line no-undef */
+                process.cwd(),
+                'src',
+                'views',
+                'playground.html',
+            );
+            const html = readFileSync(playgroundPath, 'utf-8');
+            res.setHeader('Content-Type', 'text/html');
+            res.send(html);
+        } catch (error) {
+            this.logger.error('Failed to load playground.html', error);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
+                'Playground UI not available',
+            );
+        }
     }
 }

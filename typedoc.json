@@ -1,0 +1,135 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "entryPoints": [
+        "src/modules",
+        "src/services",
+        "src/controllers",
+        "src/decorators",
+        "src/guards",
+        "src/interceptors",
+        "src/interfaces",
+        "src/constants",
+        "src/utils",
+        "src/transports/base-transport.adapter.ts"
+    ],
+    "entryPointStrategy": "expand",
+    "out": "docs",
+    "tsconfig": "tsconfig.docs.json",
+
+    "name": "NestJS MCP",
+    "includeVersion": true,
+    "readme": "README.md",
+
+    "exclude": [
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/test/**",
+        "**/tests/**",
+        "src/transports/grpc.adapter.ts",
+        "src/transports/redis.adapter.ts",
+        "src/transports/websocket.adapter.ts",
+        "src/transports/sse.adapter.ts"
+    ],
+
+    "excludePrivate": true,
+    "excludeProtected": false,
+    "excludeInternal": false,
+    "excludeExternals": true,
+
+    "categorizeByGroup": true,
+    "categoryOrder": [
+        "Modules",
+        "Services",
+        "Controllers",
+        "Decorators",
+        "Interfaces",
+        "Guards",
+        "Interceptors",
+        "Transport Adapters",
+        "Utilities",
+        "Constants",
+        "*"
+    ],
+
+    "groupOrder": [
+        "Modules",
+        "Services",
+        "Controllers",
+        "Decorators",
+        "Interfaces",
+        "Guards",
+        "Interceptors",
+        "Transport Adapters",
+        "Utilities",
+        "Constants",
+        "*"
+    ],
+
+    "sort": ["source-order", "required-first", "kind"],
+    "kindSortOrder": [
+        "Module",
+        "Class",
+        "Interface",
+        "Enum",
+        "Function",
+        "Variable",
+        "TypeAlias",
+        "Property",
+        "Method",
+        "Constructor",
+        "Accessor"
+    ],
+
+    "navigation": {
+        "includeCategories": true,
+        "includeGroups": true,
+        "includeFolders": true
+    },
+
+    "visibilityFilters": {
+        "protected": true,
+        "private": false,
+        "inherited": true,
+        "external": false
+    },
+
+    "searchInComments": true,
+    "searchInDocuments": true,
+
+    "plugin": ["typedoc-plugin-markdown"],
+
+    "validation": {
+        "notExported": true,
+        "invalidLink": true,
+        "notDocumented": false
+    },
+
+    "compilerOptions": {
+        "skipLibCheck": true
+    },
+
+    "treatWarningsAsErrors": false,
+    "treatValidationWarningsAsErrors": false,
+    "skipErrorChecking": true,
+
+    "pretty": true,
+    "emit": "both",
+
+    "githubPages": true,
+    "hideGenerator": false,
+    "cacheBust": true,
+
+    "hostedBaseUrl": "https://hmake98.github.io/nestjs-mcp/",
+
+    "sidebarLinks": {
+        "GitHub": "https://github.com/hmake98/nestjs-mcp",
+        "NPM": "https://www.npmjs.com/package/nestjs-mcp"
+    },
+
+    "navigationLinks": {
+        "GitHub": "https://github.com/hmake98/nestjs-mcp",
+        "NPM": "https://www.npmjs.com/package/nestjs-mcp"
+    }
+}

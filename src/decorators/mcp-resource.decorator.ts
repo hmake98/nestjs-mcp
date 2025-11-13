@@ -3,7 +3,7 @@ import { MCP_RESOURCE_METADATA } from '../constants';
 import {
     MCPResourceMetadata,
     MCPResourceTemplateMetadata,
-} from 'src/interfaces/mcp-resource.interface';
+} from '../interfaces/mcp-resource.interface';
 
 /**
  * Decorator to mark a method as an MCP resource provider

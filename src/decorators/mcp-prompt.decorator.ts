@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
 import { MCP_PROMPT_METADATA } from '../constants';
-import { MCPPromptMetadata } from 'src/interfaces/mcp-prompt.interface';
+import { MCPPromptMetadata } from '../interfaces/mcp-prompt.interface';
 
 /**
  * Decorator to mark a method as an MCP prompt provider

@@ -1,6 +1,7 @@
 import { ModuleMetadata, Type, Abstract } from '@nestjs/common';
 import { MCPServerInfo, JSONValue } from './mcp-protocol.interface';
-import { LogLevel, LogLevelName } from '../utils/logger';
+import { LogLevel, LogLevelName } from './mcp-logger.interface';
+import { MCPTransportConfig } from './mcp-transport.interface';
 
 /**
  * Options for configuring the MCP module
@@ -48,6 +49,13 @@ export interface MCPModuleOptions {
      * Custom error handler
      */
     errorHandler?: (error: Error) => JSONValue;
+
+    /**
+     * Transport configurations
+     * Can enable multiple transports simultaneously (HTTP, WebSocket, SSE, Redis, gRPC)
+     * HTTP transport is always enabled by default via the controller
+     */
+    transports?: MCPTransportConfig[];
 }
 
 /**

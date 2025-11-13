@@ -37,6 +37,19 @@ export default [
         },
     },
     {
+        files: ['**/*.ts'],
+        languageOptions: {
+            globals: {
+                __dirname: 'readonly',
+                NodeJS: 'readonly',
+                setInterval: 'readonly',
+                clearInterval: 'readonly',
+                setTimeout: 'readonly',
+                clearTimeout: 'readonly',
+            },
+        },
+    },
+    {
         files: ['test/**/*.spec.ts'],
         languageOptions: {
             globals: {
@@ -48,6 +61,9 @@ export default [
                 afterEach: 'readonly',
                 beforeAll: 'readonly',
                 afterAll: 'readonly',
+                fail: 'readonly',
+                global: 'readonly',
+                fetch: 'readonly',
             },
         },
     },

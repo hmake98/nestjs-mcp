@@ -6,6 +6,8 @@ import {
     MCP_RESOURCE_METADATA,
     MCP_PROMPT_METADATA,
     MCP_TOOL_PARAM_METADATA,
+    MCP_GUARDS_METADATA,
+    MCP_INTERCEPTORS_METADATA,
 } from '../constants';
 import {
     MCPToolDefinition,
@@ -57,6 +59,18 @@ export class MCPDiscoveryService {
                             instance[methodName],
                         ) || [];
 
+                    const guards =
+                        this.reflector.get(
+                            MCP_GUARDS_METADATA,
+                            instance[methodName],
+                        ) || [];
+
+                    const interceptors =
+                        this.reflector.get(
+                            MCP_INTERCEPTORS_METADATA,
+                            instance[methodName],
+                        ) || [];
+
                     const method = instance[methodName].bind(instance);
 
                     // If schema is provided, use it to generate parameters
@@ -77,6 +91,10 @@ export class MCPDiscoveryService {
                                   toolMetadata.deprecation,
                               )
                             : undefined,
+                        guards,
+                        interceptors,
+                        instance,
+                        methodName,
                     });
                 }
             });
@@ -109,6 +127,18 @@ export class MCPDiscoveryService {
                 );
 
                 if (resourceMetadata) {
+                    const guards =
+                        this.reflector.get(
+                            MCP_GUARDS_METADATA,
+                            instance[methodName],
+                        ) || [];
+
+                    const interceptors =
+                        this.reflector.get(
+                            MCP_INTERCEPTORS_METADATA,
+                            instance[methodName],
+                        ) || [];
+
                     const method = instance[methodName].bind(instance);
                     resources.push({
                         ...resourceMetadata,
@@ -121,6 +151,10 @@ export class MCPDiscoveryService {
                                   resourceMetadata.deprecation,
                               )
                             : undefined,
+                        guards,
+                        interceptors,
+                        instance,
+                        methodName,
                     });
                 }
             });
@@ -153,6 +187,18 @@ export class MCPDiscoveryService {
                 );
 
                 if (promptMetadata) {
+                    const guards =
+                        this.reflector.get(
+                            MCP_GUARDS_METADATA,
+                            instance[methodName],
+                        ) || [];
+
+                    const interceptors =
+                        this.reflector.get(
+                            MCP_INTERCEPTORS_METADATA,
+                            instance[methodName],
+                        ) || [];
+
                     const method = instance[methodName].bind(instance);
 
                     // Extract arguments from schema if provided
@@ -190,6 +236,10 @@ export class MCPDiscoveryService {
                                   promptMetadata.deprecation,
                               )
                             : undefined,
+                        guards,
+                        interceptors,
+                        instance,
+                        methodName,
                     });
                 }
             });

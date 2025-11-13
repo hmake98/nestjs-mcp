@@ -11,6 +11,9 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 - [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [MCP Playground](#mcp-playground)
+- [Type-Safe Client Generator](#type-safe-client-generator)
+- [Guards & Interceptors](#guards--interceptors)
 - [Configuration](#configuration)
 - [Decorators](#decorators)
 - [Versioning & Deprecation](#versioning--deprecation)
@@ -25,7 +28,15 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 
 - 🎯 **Decorator-based API**: Use `@MCPTool`, `@MCPToolWithParams`, `@MCPResource`, `@MCPResourceTemplate`, and `@MCPPrompt` decorators
 - 🔄 **Auto-discovery**: Automatically discovers and registers tools, resources, and prompts from your providers
-- 🌐 **HTTP/JSON-RPC Support**: Built-in HTTP controller for MCP protocol communication
+- 🛡️ **Guards & Interceptors**: Production-ready execution pipeline with authentication, rate limiting, logging, and error handling
+- 🔐 **Security Built-in**: AuthGuard, RateLimitGuard, and PermissionGuard for access control
+- 📊 **Observability**: LoggingInterceptor, TimeoutInterceptor, and ErrorMappingInterceptor for monitoring
+- 🧪 **Built-in Playground**: Interactive web UI at `/mcp/playground` for testing tools, resources, and prompts without curl
+- 🚀 **Client Generator**: CLI tool to generate 100% type-safe TypeScript clients from your running server
+- 🌐 **Multiple Transport Protocols**: HTTP, WebSocket, SSE, Redis Pub/Sub, gRPC, and stdio support
+- 📡 **Real-time Communication**: WebSocket and SSE for bidirectional and streaming data
+- 🔀 **Distributed Systems**: Redis adapter for multi-process clusters and horizontal scaling
+- ⚡ **High Performance**: gRPC support for microservices and high-throughput scenarios
 - 📦 **Official SDK Integration**: Powered by `@modelcontextprotocol/sdk` v1.21.1 with modern `McpServer` API
 - 🔧 **TypeScript First**: Full type safety and IntelliSense support with Zod schema validation
 - 📌 **Versioning & Deprecation**: Track versions and manage API evolution with built-in deprecation support
@@ -55,6 +66,26 @@ This package requires the following peer dependencies:
     "rxjs": "^7.8.0"
 }
 ```
+
+### Optional Transport Dependencies
+
+Install additional packages based on the transports you want to use:
+
+```bash
+# WebSocket transport
+npm install ws @types/node
+
+# SSE transport
+npm install rxjs @types/express
+
+# Redis transport
+npm install ioredis
+
+# gRPC transport
+npm install @grpc/grpc-js @grpc/proto-loader
+```
+
+> **Note**: HTTP and stdio transports are built-in and require no additional dependencies.
 
 ## Quick Start
 
@@ -302,6 +333,315 @@ export class PromptService {
     }
 }
 ```
+
+## MCP Playground
+
+**Interactive web UI for testing your MCP server without curl or external tools.**
+
+The built-in playground provides a browser-based interface for discovering and testing tools, resources, and prompts. Access it at:
+
+```
+http://localhost:3000/mcp/playground
+```
+
+### Features
+
+- 📋 **Auto-discovery**: Automatically loads all registered tools, resources, and prompts
+- 📝 **Dynamic Forms**: Generates input forms from JSON Schema parameter definitions
+- ▶️ **Execute & Test**: Call tools, read resources, and test prompts with real-time results
+- 📊 **Request Logging**: View JSON-RPC request/response history with timestamps
+- 🎨 **Modern UI**: Clean, responsive design with tabbed navigation
+- ⚡ **Zero Config**: Works out-of-the-box once MCPModule is imported
+
+### Usage
+
+1. **Start your NestJS app** with `MCPModule.forRoot()`:
+
+    ```typescript
+    @Module({
+        imports: [
+            MCPModule.forRoot({
+                serverInfo: { name: 'my-app', version: '1.0.0' },
+            }),
+        ],
+        providers: [YourMCPProviders],
+    })
+    export class AppModule {}
+    ```
+
+2. **Navigate to** `http://localhost:3000/mcp/playground` in your browser
+
+3. **Select a tool/resource/prompt** from the list in the left panel
+
+4. **Fill out the form** with required parameters
+
+5. **Click "Execute"** to test and view results
+
+### Playground Tabs
+
+- **Tools**: Test MCP tools with parameter inputs and view return values
+- **Resources**: Read static or templated resources by URI
+- **Prompts**: Execute prompts with arguments and view generated messages
+- **Logs**: Review request/response JSON-RPC history
+
+> 💡 **Tip**: The playground uses the same `/mcp` JSON-RPC endpoint as external clients, so behavior is identical to production usage.
+
+## Type-Safe Client Generator
+
+**Automatically generate a fully type-safe TypeScript client from your running MCP server.**
+
+The CLI tool introspects your server and generates a complete client library with 100% type safety, zero boilerplate, and full IntelliSense support.
+
+### Quick Start
+
+```bash
+# Start your MCP server
+npm run start
+
+# Generate the client
+npx nestjs-mcp client:generate \
+  --url http://localhost:3000/mcp \
+  --out ./mcp-client \
+  --name my-mcp-client
+```
+
+### Usage
+
+```typescript
+import { createClient } from './mcp-client';
+
+const mcp = createClient('http://localhost:3000/mcp');
+
+// Fully typed tool calls
+await mcp.tools['user.get']({ id: '123' });
+
+// Resource access
+await mcp.resources.read('file:///config/app.json');
+
+// Prompt execution
+await mcp.prompts['review-code']({
+    language: 'typescript',
+    code: 'function add(a, b) { return a + b; }',
+});
+```
+
+### Features
+
+- ✅ **100% Type Safety** - Parameter types, return types, all automatically inferred
+- ✅ **Zero Boilerplate** - No manual JSON-RPC calls or schema definitions
+- ✅ **IntelliSense** - Full auto-completion for all tools, resources, and prompts
+- ✅ **Version Aware** - Includes deprecation warnings in JSDoc comments
+- ✅ **Single Source of Truth** - Regenerate when your server changes
+- ✅ **Framework Agnostic** - Works in React, Vue, Node.js workers, microservices
+
+### Generated Structure
+
+```
+mcp-client/
+├── index.ts          # Main entry with createClient()
+├── client.ts         # Base MCPClient class
+├── package.json      # Client metadata
+├── tools/
+│   └── index.ts      # Type-safe tool wrappers
+├── resources/
+│   └── index.ts      # Resource access functions
+├── prompts/
+│   └── index.ts      # Prompt execution functions
+└── types/
+    └── index.ts      # Generated TypeScript interfaces
+```
+
+### Integration Examples
+
+**Frontend (React)**
+
+```typescript
+const mcp = createClient(process.env.REACT_APP_MCP_URL);
+
+export function UserProfile({ userId }: { userId: string }) {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        mcp.tools['user.get']({ id: userId }).then(setUser);
+    }, [userId]);
+
+    return <div>{user?.name}</div>;
+}
+```
+
+**Worker / Background Job**
+
+```typescript
+const mcp = createClient('http://mcp-server:3000/mcp');
+
+export async function processVideo(videoId: string) {
+    await mcp.tools['video.transcode']({
+        id: videoId,
+        format: 'mp4',
+        quality: 'high',
+    });
+}
+```
+
+**Microservice**
+
+```typescript
+const mcp = createClient('http://mcp-server.internal:3000/mcp');
+
+app.get('/analyze', async (req, res) => {
+    const analysis = await mcp.tools['analyze-sentiment']({
+        text: req.body.text,
+    });
+    res.json(analysis);
+});
+```
+
+### CLI Options
+
+```bash
+npx nestjs-mcp client:generate [options]
+
+Options:
+  --url <url>         MCP server URL (required)
+  --out <directory>   Output directory (default: ./mcp-client)
+  --name <name>       Client package name (default: mcp-client)
+  -V, --version       Output version number
+  -h, --help          Display help
+```
+
+### Regenerating After Changes
+
+When you update your MCP server (add/remove/modify tools), regenerate the client:
+
+```bash
+npx nestjs-mcp client:generate --url http://localhost:3000/mcp --out ./mcp-client
+```
+
+The client will be updated with the latest server definitions.
+
+## Guards & Interceptors
+
+**Production-ready execution pipeline control for authentication, authorization, logging, and error handling.**
+
+Guards and interceptors provide powerful control over your MCP tool/resource/prompt execution:
+
+### Quick Example
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import {
+    MCPTool,
+    UseMCPGuards,
+    UseMCPInterceptors,
+    AuthGuard,
+    RateLimitGuard,
+    LoggingInterceptor,
+    TimeoutInterceptor,
+} from 'nestjs-mcp';
+
+@Injectable()
+export class SecureToolProvider {
+    @UseMCPGuards(AuthGuard, RateLimitGuard)
+    @UseMCPInterceptors(LoggingInterceptor, new TimeoutInterceptor(5000))
+    @MCPTool({
+        name: 'production_ready_tool',
+        description: 'Secured, rate-limited, logged, and timed',
+    })
+    async productionTool() {
+        return 'Protected and monitored data';
+    }
+}
+```
+
+### Built-in Guards
+
+- **`AuthGuard`**: Authentication (extend for JWT, OAuth, etc.)
+- **`RateLimitGuard`**: Rate limiting (10 req/min default, configurable)
+- **`PermissionGuard`**: Role-based access control
+
+### Built-in Interceptors
+
+- **`LoggingInterceptor`**: Execution logging with timing
+- **`TimeoutInterceptor`**: Prevent long-running operations
+- **`ErrorMappingInterceptor`**: Consistent error responses
+
+### Usage Patterns
+
+```typescript
+// Authentication only
+@UseMCPGuards(AuthGuard)
+@MCPTool({ name: 'auth_tool', description: 'Requires auth' })
+async authTool() { return 'data'; }
+
+// Full production stack
+@UseMCPGuards(AuthGuard, RateLimitGuard, PermissionGuard)
+@UseMCPInterceptors(
+    LoggingInterceptor,
+    new TimeoutInterceptor(10000),
+    ErrorMappingInterceptor,
+)
+@MCPTool({ name: 'enterprise_tool', description: 'Enterprise ready' })
+async enterpriseTool() { return 'data'; }
+```
+
+### Custom Guards
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import {
+    MCPGuard,
+    MCPExecutionContext,
+    MCPUnauthorizedException,
+} from 'nestjs-mcp';
+
+@Injectable()
+export class JWTAuthGuard implements MCPGuard {
+    async canActivate(context: MCPExecutionContext): Promise<boolean> {
+        const request = context.getRequest();
+        const token = request.params?.auth?.token;
+
+        if (!(await this.validateToken(token))) {
+            throw new MCPUnauthorizedException('Invalid token');
+        }
+        return true;
+    }
+
+    private async validateToken(token: string): Promise<boolean> {
+        // Your JWT validation logic
+        return true;
+    }
+}
+```
+
+### Custom Interceptors
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import {
+    MCPInterceptor,
+    MCPExecutionContext,
+    MCPCallHandler,
+} from 'nestjs-mcp';
+
+@Injectable()
+export class CachingInterceptor implements MCPInterceptor {
+    private cache = new Map();
+
+    async intercept(
+        context: MCPExecutionContext,
+        next: MCPCallHandler,
+    ): Promise<unknown> {
+        const key = context.switchToMcp().getOperationName();
+        if (this.cache.has(key)) return this.cache.get(key);
+
+        const result = await next.handle();
+        this.cache.set(key, result);
+        return result;
+    }
+}
+```
+
+📚 **[Complete Guards & Interceptors Documentation →](./docs/guards-interceptors.md)**
 
 ## Configuration
 
@@ -938,6 +1278,391 @@ curl -X POST http://localhost:3000/mcp/batch \
     }
   ]'
 ```
+
+### WebSocket Transport
+
+Real-time bidirectional communication using WebSockets. Perfect for:
+
+- Browser extensions
+- Real-time applications
+- Interactive UI clients
+- Long-lived connections
+
+**Installation:**
+
+```bash
+npm install ws
+npm install --save-dev @types/node
+```
+
+**Configuration:**
+
+```typescript
+import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+
+@Module({
+    imports: [
+        MCPModule.forRoot({
+            serverInfo: {
+                name: 'my-server',
+                version: '1.0.0',
+            },
+            transports: [
+                {
+                    type: MCPTransportType.WEBSOCKET,
+                    enabled: true,
+                    options: {
+                        port: 3001,
+                        host: '0.0.0.0',
+                        path: '/mcp-ws',
+                        maxConnections: 100,
+                        perMessageDeflate: false,
+                        maxPayload: 10 * 1024 * 1024, // 10MB
+                    },
+                },
+            ],
+        }),
+    ],
+})
+export class AppModule {}
+```
+
+**Client Example (JavaScript):**
+
+```javascript
+const ws = new WebSocket('ws://localhost:3001/mcp-ws');
+
+ws.onopen = () => {
+    // Send MCP request
+    ws.send(
+        JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'tools/list',
+        }),
+    );
+};
+
+ws.onmessage = (event) => {
+    const response = JSON.parse(event.data);
+    console.log('Response:', response);
+};
+```
+
+### Server-Sent Events (SSE) Transport
+
+One-way streaming from server to client. Perfect for:
+
+- Progressive updates
+- Event notifications
+- Browser-based applications
+- Lightweight real-time updates
+
+**Installation:**
+
+```bash
+npm install rxjs
+npm install --save-dev @types/express
+```
+
+**Configuration:**
+
+```typescript
+import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+
+@Module({
+    imports: [
+        MCPModule.forRoot({
+            serverInfo: {
+                name: 'my-server',
+                version: '1.0.0',
+            },
+            transports: [
+                {
+                    type: MCPTransportType.SSE,
+                    enabled: true,
+                    options: {
+                        path: '/mcp-sse',
+                        heartbeatInterval: 30000, // 30s
+                        retryInterval: 3000, // 3s
+                    },
+                },
+            ],
+        }),
+    ],
+})
+export class AppModule {}
+```
+
+**Client Example (JavaScript):**
+
+```javascript
+const eventSource = new EventSource('http://localhost:3000/mcp-sse');
+
+eventSource.addEventListener('mcp-response', (event) => {
+    const response = JSON.parse(event.data);
+    console.log('Response:', response);
+});
+
+eventSource.addEventListener('heartbeat', (event) => {
+    console.log('Heartbeat:', event.data);
+});
+
+// Send request via POST to trigger response
+fetch('http://localhost:3000/mcp-sse', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/list',
+    }),
+});
+```
+
+### Redis Transport
+
+Pub/Sub communication via Redis. Perfect for:
+
+- Multi-process clusters
+- Horizontal scaling
+- Microservices architecture
+- Distributed systems
+
+**Installation:**
+
+```bash
+npm install ioredis
+```
+
+**Configuration:**
+
+```typescript
+import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+
+@Module({
+    imports: [
+        MCPModule.forRoot({
+            serverInfo: {
+                name: 'my-server',
+                version: '1.0.0',
+            },
+            transports: [
+                {
+                    type: MCPTransportType.REDIS,
+                    enabled: true,
+                    options: {
+                        host: 'localhost',
+                        port: 6379,
+                        password: 'your-password', // Optional
+                        db: 0,
+                        channelPrefix: 'mcp',
+                        requestChannel: 'requests',
+                        responseChannel: 'responses',
+                    },
+                },
+            ],
+        }),
+    ],
+})
+export class AppModule {}
+```
+
+**Usage:**
+
+The Redis adapter uses pub/sub channels:
+
+- **Requests**: Published to `mcp:requests`
+- **Responses**: Published to `mcp:responses:{clientId}`
+- **Broadcasts**: Published to `mcp:broadcast`
+
+**Client Example (Node.js with ioredis):**
+
+```typescript
+import Redis from 'ioredis';
+
+const publisher = new Redis();
+const subscriber = new Redis();
+
+const clientId = 'client-123';
+
+// Subscribe to responses
+await subscriber.subscribe(`mcp:responses:${clientId}`);
+
+subscriber.on('message', (channel, message) => {
+    const response = JSON.parse(message);
+    console.log('Response:', response);
+});
+
+// Send request
+await publisher.publish(
+    'mcp:requests',
+    JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'tools/list',
+        clientId: clientId,
+    }),
+);
+```
+
+### gRPC Transport
+
+High-performance RPC with bidirectional streaming. Perfect for:
+
+- Microservices
+- High-throughput systems
+- Type-safe communication
+- Cross-language support
+
+**Installation:**
+
+```bash
+npm install @grpc/grpc-js @grpc/proto-loader
+```
+
+**Configuration:**
+
+```typescript
+import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+
+@Module({
+    imports: [
+        MCPModule.forRoot({
+            serverInfo: {
+                name: 'my-server',
+                version: '1.0.0',
+            },
+            transports: [
+                {
+                    type: MCPTransportType.GRPC,
+                    enabled: true,
+                    options: {
+                        port: 50051,
+                        host: '0.0.0.0',
+                        secure: false, // Set true for TLS
+                        // For TLS:
+                        // secure: true,
+                        // credentials: {
+                        //     rootCerts: fs.readFileSync('ca.pem'),
+                        //     privateKey: fs.readFileSync('server-key.pem'),
+                        //     certChain: fs.readFileSync('server-cert.pem'),
+                        // },
+                    },
+                },
+            ],
+        }),
+    ],
+})
+export class AppModule {}
+```
+
+**Proto File Location:**
+
+The proto file is included at `node_modules/nestjs-mcp/dist/transports/proto/mcp.proto`
+
+**Client Example (Node.js):**
+
+```typescript
+import * as grpc from '@grpc/grpc-js';
+import * as protoLoader from '@grpc/proto-loader';
+
+const packageDefinition = protoLoader.loadSync('mcp.proto');
+const proto = grpc.loadPackageDefinition(packageDefinition);
+
+const client = new proto.mcp.MCPService(
+    'localhost:50051',
+    grpc.credentials.createInsecure(),
+);
+
+// Unary call
+client.Call(
+    {
+        jsonrpc: '2.0',
+        string_id: '1',
+        method: 'tools/list',
+        params_json: '{}',
+    },
+    (err, response) => {
+        if (err) {
+            console.error(err);
+        } else {
+            const result = JSON.parse(response.result_json);
+            console.log('Tools:', result);
+        }
+    },
+);
+
+// Bidirectional streaming
+const stream = client.Stream();
+
+stream.on('data', (response) => {
+    console.log('Response:', response);
+});
+
+stream.write({
+    jsonrpc: '2.0',
+    string_id: '1',
+    method: 'tools/list',
+    params_json: '{}',
+});
+```
+
+### Multiple Transports
+
+You can enable multiple transports simultaneously:
+
+```typescript
+import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+
+@Module({
+    imports: [
+        MCPModule.forRoot({
+            serverInfo: {
+                name: 'multi-transport-server',
+                version: '1.0.0',
+            },
+            transports: [
+                {
+                    type: MCPTransportType.WEBSOCKET,
+                    enabled: true,
+                    options: { port: 3001 },
+                },
+                {
+                    type: MCPTransportType.SSE,
+                    enabled: true,
+                    options: { path: '/mcp-sse' },
+                },
+                {
+                    type: MCPTransportType.REDIS,
+                    enabled: true,
+                    options: {
+                        host: 'localhost',
+                        port: 6379,
+                    },
+                },
+                {
+                    type: MCPTransportType.GRPC,
+                    enabled: true,
+                    options: { port: 50051 },
+                },
+            ],
+        }),
+    ],
+})
+export class AppModule {}
+```
+
+### Transport Comparison
+
+| Transport     | Direction        | Use Case                        | Performance | Complexity |
+| ------------- | ---------------- | ------------------------------- | ----------- | ---------- |
+| **HTTP**      | Request/Response | REST APIs, Simple integration   | Good        | Low        |
+| **WebSocket** | Bidirectional    | Real-time apps, Browser clients | Excellent   | Medium     |
+| **SSE**       | Server → Client  | Live updates, Notifications     | Good        | Low        |
+| **Redis**     | Pub/Sub          | Multi-process, Distributed      | Very Good   | Medium     |
+| **gRPC**      | Bidirectional    | Microservices, High-throughput  | Excellent   | High       |
+| **stdio**     | Bidirectional    | CLI tools, Desktop apps         | Good        | Low        |
 
 ### Stdio Transport
 

@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package mcp;
+
+// MCP Service Definition
+service MCPService {
+  // Unary call for single request/response
+  rpc Call(MCPRequest) returns (MCPResponse);
+  
+  // Bidirectional streaming for real-time communication
+  rpc Stream(stream MCPRequest) returns (stream MCPResponse);
+  
+  // Server streaming for notifications/events
+  rpc Subscribe(SubscribeRequest) returns (stream MCPResponse);
+}
+
+// JSON-RPC Request
+message MCPRequest {
+  string jsonrpc = 1;
+  oneof id_type {
+    string string_id = 2;
+    int64 int_id = 3;
+  }
+  string method = 4;
+  string params_json = 5;  // JSON-encoded parameters
+}
+
+// JSON-RPC Response
+message MCPResponse {
+  string jsonrpc = 1;
+  oneof id_type {
+    string string_id = 2;
+    int64 int_id = 3;
+  }
+  oneof response {
+    string result_json = 4;  // JSON-encoded result
+    MCPError error = 5;
+  }
+}
+
+// Error object
+message MCPError {
+  int32 code = 1;
+  string message = 2;
+  string data_json = 3;  // JSON-encoded error data
+}
+
+// Subscribe request
+message SubscribeRequest {
+  string client_id = 1;
+  repeated string methods = 2;  // Methods to subscribe to
+}

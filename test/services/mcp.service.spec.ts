@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { MCPService } from '../../src/services/mcp.service';
 import { MCPRegistryService } from '../../src/services/mcp-registry.service';
+import { MCPExecutionService } from '../../src/services/mcp-execution.service';
 import {
     MCPRequest,
     MCPModuleOptions,
@@ -36,9 +38,16 @@ describe('MCPService', () => {
             providers: [
                 MCPService,
                 MCPRegistryService,
+                MCPExecutionService,
                 {
                     provide: MCP_MODULE_OPTIONS,
                     useValue: mockOptions,
+                },
+                {
+                    provide: ModuleRef,
+                    useValue: {
+                        get: jest.fn(),
+                    },
                 },
             ],
         }).compile();
@@ -536,11 +545,18 @@ describe('MCPService', () => {
                     providers: [
                         MCPService,
                         MCPRegistryService,
+                        MCPExecutionService,
                         {
                             provide: MCP_MODULE_OPTIONS,
                             useValue: {
                                 ...mockOptions,
                                 errorHandler: customErrorHandler,
+                            },
+                        },
+                        {
+                            provide: ModuleRef,
+                            useValue: {
+                                get: jest.fn(),
                             },
                         },
                     ],
@@ -582,11 +598,18 @@ describe('MCPService', () => {
                     providers: [
                         MCPService,
                         MCPRegistryService,
+                        MCPExecutionService,
                         {
                             provide: MCP_MODULE_OPTIONS,
                             useValue: {
                                 ...mockOptions,
                                 errorHandler: faultyErrorHandler,
+                            },
+                        },
+                        {
+                            provide: ModuleRef,
+                            useValue: {
+                                get: jest.fn(),
                             },
                         },
                     ],
@@ -719,11 +742,18 @@ describe('MCPService', () => {
                     providers: [
                         MCPService,
                         MCPRegistryService,
+                        MCPExecutionService,
                         {
                             provide: MCP_MODULE_OPTIONS,
                             useValue: {
                                 ...mockOptions,
                                 enableLogging: false,
+                            },
+                        },
+                        {
+                            provide: ModuleRef,
+                            useValue: {
+                                get: jest.fn(),
                             },
                         },
                     ],
@@ -751,11 +781,18 @@ describe('MCPService', () => {
                     providers: [
                         MCPService,
                         MCPRegistryService,
+                        MCPExecutionService,
                         {
                             provide: MCP_MODULE_OPTIONS,
                             useValue: {
                                 ...mockOptions,
                                 enableLogging: true,
+                            },
+                        },
+                        {
+                            provide: ModuleRef,
+                            useValue: {
+                                get: jest.fn(),
                             },
                         },
                     ],

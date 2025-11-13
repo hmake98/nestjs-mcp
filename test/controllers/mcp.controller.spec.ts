@@ -1,10 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import type { Response } from 'express';
 import { MCPController } from '../../src/controllers/mcp.controller';
 import { MCPService } from '../../src/services/mcp.service';
 import { MCPRegistryService } from '../../src/services/mcp-registry.service';
+import { MCPExecutionService } from '../../src/services/mcp-execution.service';
 import { MCPRequest, MCPModuleOptions } from '../../src/interfaces';
 import { MCP_MODULE_OPTIONS, MCPMethod } from '../../src/constants';
+import * as fs from 'node:fs';
+
+// Mock fs module
+jest.mock('node:fs');
 
 describe('MCPController', () => {
     let controller: MCPController;
@@ -28,9 +35,16 @@ describe('MCPController', () => {
             providers: [
                 MCPService,
                 MCPRegistryService,
+                MCPExecutionService,
                 {
                     provide: MCP_MODULE_OPTIONS,
                     useValue: mockOptions,
+                },
+                {
+                    provide: ModuleRef,
+                    useValue: {
+                        get: jest.fn(),
+                    },
                 },
             ],
         }).compile();
@@ -189,11 +203,18 @@ describe('MCPController', () => {
                     providers: [
                         MCPService,
                         MCPRegistryService,
+                        MCPExecutionService,
                         {
                             provide: MCP_MODULE_OPTIONS,
                             useValue: {
                                 ...mockOptions,
                                 enableLogging: false,
+                            },
+                        },
+                        {
+                            provide: ModuleRef,
+                            useValue: {
+                                get: jest.fn(),
                             },
                         },
                     ],
@@ -299,6 +320,72 @@ describe('MCPController', () => {
             expect(responses).toHaveLength(0);
             expect(Logger.prototype.debug).toHaveBeenCalledWith(
                 'Received batch request with 0 requests',
+            );
+        });
+    });
+
+    describe('getPlayground', () => {
+        it('should serve playground HTML with correct content type', () => {
+            const mockRes = {
+                setHeader: jest.fn(),
+                send: jest.fn(),
+                status: jest.fn().mockReturnThis(),
+            } as unknown as Response;
+
+            // Mock readFileSync to return test HTML
+            (fs.readFileSync as jest.Mock).mockReturnValue(
+                '<html><body>Test Playground</body></html>',
+            );
+
+            controller.getPlayground(mockRes);
+
+            expect(mockRes.setHeader).toHaveBeenCalledWith(
+                'Content-Type',
+                'text/html',
+            );
+            expect(mockRes.send).toHaveBeenCalledWith(
+                '<html><body>Test Playground</body></html>',
+            );
+        });
+
+        it('should log when serving playground with logging enabled', () => {
+            const mockRes = {
+                setHeader: jest.fn(),
+                send: jest.fn(),
+                status: jest.fn().mockReturnThis(),
+            } as unknown as Response;
+
+            (fs.readFileSync as jest.Mock).mockReturnValue(
+                '<html>Playground</html>',
+            );
+
+            controller.getPlayground(mockRes);
+
+            expect(Logger.prototype.log).toHaveBeenCalledWith(
+                'Serving MCP Playground UI',
+            );
+        });
+
+        it('should handle file read errors gracefully', () => {
+            const mockRes = {
+                setHeader: jest.fn(),
+                send: jest.fn(),
+                status: jest.fn().mockReturnThis(),
+            } as unknown as Response;
+
+            (fs.readFileSync as jest.Mock).mockImplementation(() => {
+                throw new Error('File not found');
+            });
+
+            controller.getPlayground(mockRes);
+
+            expect(Logger.prototype.error).toHaveBeenCalledWith(
+                'Failed to load playground.html',
+                expect.any(Error),
+            );
+            expect(mockRes.status).toHaveBeenCalledWith(500);
+            expect(mockRes.send).toHaveBeenCalledWith(
+                'Playground UI not available',
             );
         });
     });

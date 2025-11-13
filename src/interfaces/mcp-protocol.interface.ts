@@ -80,6 +80,22 @@ export interface MCPToolDefinition {
      * Deprecation message with migration guidance
      */
     deprecationMessage?: string;
+    /**
+     * Guards to apply to this tool
+     */
+    guards?: unknown[];
+    /**
+     * Interceptors to apply to this tool
+     */
+    interceptors?: unknown[];
+    /**
+     * Handler instance (for context)
+     */
+    instance?: unknown;
+    /**
+     * Handler method name (for context)
+     */
+    methodName?: string;
 }
 
 export interface MCPToolResult {
@@ -261,6 +277,22 @@ export interface DiscoveredMCPResource {
      * Deprecation message with migration guidance
      */
     deprecationMessage?: string;
+    /**
+     * Guards to apply to this resource
+     */
+    guards?: unknown[];
+    /**
+     * Interceptors to apply to this resource
+     */
+    interceptors?: unknown[];
+    /**
+     * Handler instance (for context)
+     */
+    instance?: unknown;
+    /**
+     * Handler method name (for context)
+     */
+    methodName?: string;
 }
 
 /**
@@ -291,4 +323,20 @@ export interface DiscoveredMCPPrompt {
      * Deprecation message with migration guidance
      */
     deprecationMessage?: string;
+    /**
+     * Guards to apply to this prompt
+     */
+    guards?: unknown[];
+    /**
+     * Interceptors to apply to this prompt
+     */
+    interceptors?: unknown[];
+    /**
+     * Handler instance (for context)
+     */
+    instance?: unknown;
+    /**
+     * Handler method name (for context)
+     */
+    methodName?: string;
 }

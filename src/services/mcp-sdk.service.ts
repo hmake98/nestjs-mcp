@@ -23,7 +23,7 @@ import { MCPLogger, LogLevel } from '../utils';
 @Injectable()
 export class MCPSDKService implements OnModuleDestroy {
     private readonly logger: MCPLogger;
-    private mcpServer: McpServer;
+    private mcpServer!: McpServer;
     private transport?: StdioServerTransport;
     private isRegistered = false;
 

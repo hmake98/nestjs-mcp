@@ -1,20 +1,8 @@
 import { Logger as NestLogger } from '@nestjs/common';
+import { LogLevel, LogLevelName } from '../interfaces';
 
-/**
- * Log levels for the MCP module
- */
-export enum LogLevel {
-    ERROR = 0,
-    WARN = 1,
-    INFO = 2,
-    DEBUG = 3,
-    VERBOSE = 4,
-}
-
-/**
- * Map log level names to enum values
- */
-export type LogLevelName = 'error' | 'warn' | 'info' | 'debug' | 'verbose';
+// Re-export for backward compatibility
+export { LogLevel, LogLevelName };
 
 const LOG_LEVEL_MAP: Record<LogLevelName, LogLevel> = {
     error: LogLevel.ERROR,

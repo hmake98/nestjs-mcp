@@ -3,3 +3,7 @@ export * from './mcp-options.interface';
 export * from './mcp-tool.interface';
 export * from './mcp-resource.interface';
 export * from './mcp-prompt.interface';
+export * from './mcp-transport.interface';
+export * from './mcp-execution.interface';
+export * from './mcp-cli.interface';
+export * from './mcp-logger.interface';

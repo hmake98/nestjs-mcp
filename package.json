@@ -4,6 +4,9 @@
     "description": "NestJS package for integrating MCP (Model Context Protocol) servers",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "bin": {
+        "nestjs-mcp": "./bin/cli.js"
+    },
     "scripts": {
         "build": "rimraf dist && tsc -p tsconfig.json",
         "clean": "rimraf dist",
@@ -16,14 +19,20 @@
         "type-check": "tsc --noEmit",
         "fix-all": "npm run format && npm run lint",
         "test": "jest --coverage --passWithNoTests --forceExit",
-        "test:ci": "npm run test:unit && npm run test:integration",
+        "test:unit": "jest --testPathPattern=test/.*.spec.ts --coverage --passWithNoTests --forceExit",
+        "test:integration": "jest --testPathPattern=test/.*integration.spec.ts --coverage --passWithNoTests --forceExit",
+        "test:ci": "jest --coverage --passWithNoTests --forceExit --ci",
         "make-badges": "istanbul-badges-readme",
         "lint": "eslint \"{src,test}/**/*.ts\" --fix",
+        "lint:check": "eslint \"{src,test}/**/*.ts\"",
         "format": "prettier --write \"src/**/*.ts\"",
+        "format:check": "prettier --check \"src/**/*.ts\"",
         "update:packages": "npx npm-check-updates -u",
-        "docs:generate": "typedoc src --out docs --excludePrivate --excludeProtected",
+        "docs:generate": "typedoc --options typedoc.json",
         "docs:serve": "npx http-server docs -p 3001 -o",
         "docs:clean": "rimraf docs",
+        "docs:build": "npm run docs:clean && npm run docs:generate",
+        "docs:watch": "typedoc --options typedoc.json --watch",
         "prepare": "husky",
         "prepublishOnly": "npm run build"
     },
@@ -48,17 +57,24 @@
         "rxjs": "^7.8.0"
     },
     "devDependencies": {
+        "@grpc/grpc-js": "^1.14.1",
+        "@grpc/proto-loader": "^0.8.0",
         "@nestjs/common": "^10.3.0",
         "@nestjs/core": "^10.3.0",
         "@nestjs/testing": "^10.3.0",
+        "@types/express": "^5.0.5",
         "@types/jest": "^29.5.11",
         "@types/node": "^22.0.0",
+        "@types/ws": "^8.18.1",
         "@typescript-eslint/eslint-plugin": "^8.15.0",
         "@typescript-eslint/parser": "^8.15.0",
+        "axios": "^1.13.2",
+        "commander": "^14.0.2",
         "eslint": "^9.15.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.2.1",
         "husky": "^9.1.7",
+        "ioredis": "^5.8.2",
         "istanbul-badges-readme": "^1.9.0",
         "jest": "^29.7.0",
         "lint-staged": "^15.2.10",
@@ -68,7 +84,10 @@
         "rxjs": "^7.8.1",
         "ts-jest": "^29.1.1",
         "typedoc": "^0.28.14",
-        "typescript": "^5.7.2"
+        "typedoc-plugin-markdown": "^4.9.0",
+        "typedoc-plugin-mermaid": "^1.12.0",
+        "typescript": "^5.7.2",
+        "ws": "^8.18.0"
     },
     "lint-staged": {
         "*.ts": [

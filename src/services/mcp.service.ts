@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Type } from '@nestjs/common';
 import {
     MCPRequest,
     MCPResponse,
@@ -10,6 +10,8 @@ import {
     MCPToolParameter,
     JSONValue,
     JSONObject,
+    MCPException,
+    MCPContextType,
 } from '../interfaces';
 import {
     MCPErrorCode,
@@ -18,11 +20,13 @@ import {
     MCP_MODULE_OPTIONS,
 } from '../constants';
 import { MCPRegistryService } from './mcp-registry.service';
+import { MCPExecutionService } from './mcp-execution.service';
 import {
     safeValidateWithZod,
     zodToJsonSchema,
     MCPLogger,
     LogLevel,
+    MCPExecutionContextImpl,
 } from '../utils';
 
 /**
@@ -37,6 +41,7 @@ export class MCPService {
         @Inject(MCP_MODULE_OPTIONS)
         private readonly options: MCPModuleOptions,
         private readonly registryService: MCPRegistryService,
+        private readonly executionService: MCPExecutionService,
     ) {
         // Initialize logger with configured log level
         const logLevel =
@@ -228,8 +233,36 @@ export class MCPService {
                 validatedArgs = validation.data as JSONObject;
             }
 
-            const result = await tool.handler(validatedArgs);
-            const toolResult: MCPToolResult = this.normalizeToolResult(result);
+            // Create execution context
+            const context = new MCPExecutionContextImpl(
+                MCPContextType.TOOL,
+                request,
+                tool.instance
+                    ? (tool.instance.constructor as Type<unknown>)
+                    : (Object as Type<unknown>),
+                tool.methodName || 'handler',
+                [validatedArgs],
+                {
+                    name: tool.name,
+                    description: tool.description,
+                    version: tool.version,
+                    deprecated: tool.deprecated,
+                },
+                tool.name,
+            );
+
+            // Execute with guards and interceptors
+            const result =
+                await this.executionService.executeWithGuardsAndInterceptors(
+                    tool.guards || [],
+                    tool.interceptors || [],
+                    context,
+                    async () => tool.handler(validatedArgs),
+                );
+
+            const toolResult: MCPToolResult = this.normalizeToolResult(
+                result as JSONValue,
+            );
 
             return {
                 jsonrpc: '2.0',
@@ -237,6 +270,16 @@ export class MCPService {
                 result: toolResult,
             };
         } catch (error) {
+            // Handle MCP exceptions with custom error codes
+            if (error instanceof MCPException) {
+                return this.createErrorResponse(
+                    request.id,
+                    error.code,
+                    error.message,
+                    error.data as JSONValue,
+                );
+            }
+
             return {
                 jsonrpc: '2.0',
                 id: request.id,
@@ -359,7 +402,33 @@ export class MCPService {
                 validatedVariables = validation.data as Record<string, string>;
             }
 
-            const content = await resource.handler(validatedVariables);
+            // Create execution context
+            const context = new MCPExecutionContextImpl(
+                MCPContextType.RESOURCE,
+                request,
+                resource.instance
+                    ? (resource.instance.constructor as Type<unknown>)
+                    : (Object as Type<unknown>),
+                resource.methodName || 'handler',
+                [validatedVariables],
+                {
+                    uri: resource.uri || resource.uriTemplate,
+                    name: resource.name,
+                    description: resource.description,
+                    version: resource.version,
+                    deprecated: resource.deprecated,
+                },
+                resource.name,
+            );
+
+            // Execute with guards and interceptors
+            const content =
+                await this.executionService.executeWithGuardsAndInterceptors(
+                    resource.guards || [],
+                    resource.interceptors || [],
+                    context,
+                    async () => resource.handler(validatedVariables),
+                );
 
             return {
                 jsonrpc: '2.0',
@@ -369,6 +438,14 @@ export class MCPService {
                 },
             };
         } catch (error) {
+            if (error instanceof MCPException) {
+                return this.createErrorResponse(
+                    request.id,
+                    error.code,
+                    error.message,
+                    error.data as JSONValue,
+                );
+            }
             return this.handleError(request.id, error);
         }
     }
@@ -469,7 +546,32 @@ export class MCPService {
                 validatedArgs = validation.data as JSONObject;
             }
 
-            const messages = await prompt.handler(validatedArgs);
+            // Create execution context
+            const context = new MCPExecutionContextImpl(
+                MCPContextType.PROMPT,
+                request,
+                prompt.instance
+                    ? (prompt.instance.constructor as Type<unknown>)
+                    : (Object as Type<unknown>),
+                prompt.methodName || 'handler',
+                [validatedArgs],
+                {
+                    name: prompt.name,
+                    description: prompt.description,
+                    version: prompt.version,
+                    deprecated: prompt.deprecated,
+                },
+                prompt.name,
+            );
+
+            // Execute with guards and interceptors
+            const messages =
+                await this.executionService.executeWithGuardsAndInterceptors(
+                    prompt.guards || [],
+                    prompt.interceptors || [],
+                    context,
+                    async () => prompt.handler(validatedArgs),
+                );
 
             return {
                 jsonrpc: '2.0',
@@ -479,6 +581,14 @@ export class MCPService {
                 },
             };
         } catch (error) {
+            if (error instanceof MCPException) {
+                return this.createErrorResponse(
+                    request.id,
+                    error.code,
+                    error.message,
+                    error.data as JSONValue,
+                );
+            }
             return this.handleError(request.id, error);
         }
     }
