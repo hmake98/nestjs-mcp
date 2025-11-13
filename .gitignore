@@ -7,3 +7,8 @@ coverage/
 .env.local
 .env.*.local
 *.tsbuildinfo
+
+# Example dependencies and builds
+examples/*/node_modules/
+examples/*/dist/
+examples/*/.env

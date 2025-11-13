@@ -4,6 +4,8 @@
 
 A NestJS library for integrating the Model Context Protocol (MCP) into your applications. Built on top of the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) v1.21.1, this package provides a decorator-based approach to building MCP servers with NestJS.
 
+> 📚 **[View Complete Working Example →](./examples/basic/)**
+
 ## Table of Contents
 
 - [Features](#features)
@@ -993,7 +995,39 @@ The package uses the modern `McpServer` API from `@modelcontextprotocol/sdk`:
 
 ## Examples
 
-### Complete Application Example
+### 🎯 Running Example
+
+A complete, working example is available in the [`examples/basic`](./examples/basic/) directory. This demonstrates:
+
+- ✅ Tools (calculator operations, string manipulation)
+- ✅ Static and dynamic resources with URI templates
+- ✅ Reusable prompt templates
+- ✅ Complete NestJS application setup
+
+**Quick Start:**
+
+```bash
+# Build the library
+npm install && npm run build
+
+# Run the example
+cd examples/basic
+npm install
+npm start
+```
+
+Then test it:
+
+```bash
+# List all tools
+curl -X POST http://localhost:3000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+See the [example README](./examples/basic/README.md) for detailed usage instructions.
+
+### Complete Application Example (Code Snippets)
 
 ```typescript
 // app.module.ts
