@@ -44,11 +44,11 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 ## Installation
 
 ```bash
-npm install nestjs-mcp
+npm install @hmake98/nestjs-mcp
 # or
-yarn add nestjs-mcp
+yarn add @hmake98/nestjs-mcp
 # or
-pnpm add nestjs-mcp
+pnpm add @hmake98/nestjs-mcp
 ```
 
 ### Peer Dependencies
@@ -92,7 +92,7 @@ Import and configure the `MCPModule` in your application module:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { MCPModule } from 'nestjs-mcp';
+import { MCPModule } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -117,7 +117,7 @@ Create a service with MCP tool methods using decorators:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { MCPTool, MCPToolWithParams } from 'nestjs-mcp';
+import { MCPTool, MCPToolWithParams } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class CalculatorService {
@@ -191,7 +191,7 @@ Resources provide access to data or content. Create static or dynamic resources:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { MCPResource, MCPResourceTemplate } from 'nestjs-mcp';
+import { MCPResource, MCPResourceTemplate } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class FileService {
@@ -265,7 +265,7 @@ Prompts provide reusable message templates for AI interactions:
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { MCPPrompt } from 'nestjs-mcp';
+import { MCPPrompt } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class PromptService {
@@ -396,7 +396,7 @@ The CLI tool introspects your server and generates a complete client library wit
 npm run start
 
 # Generate the client
-npx nestjs-mcp client:generate \
+npx @hmake98/nestjs-mcp client:generate \
   --url http://localhost:3000/mcp \
   --out ./mcp-client \
   --name my-mcp-client
@@ -496,7 +496,7 @@ app.get('/analyze', async (req, res) => {
 ### CLI Options
 
 ```bash
-npx nestjs-mcp client:generate [options]
+npx @hmake98/nestjs-mcp client:generate [options]
 
 Options:
   --url <url>         MCP server URL (required)
@@ -511,7 +511,7 @@ Options:
 When you update your MCP server (add/remove/modify tools), regenerate the client:
 
 ```bash
-npx nestjs-mcp client:generate --url http://localhost:3000/mcp --out ./mcp-client
+npx @hmake98/nestjs-mcp client:generate --url http://localhost:3000/mcp --out ./mcp-client
 ```
 
 The client will be updated with the latest server definitions.
@@ -534,7 +534,7 @@ import {
     RateLimitGuard,
     LoggingInterceptor,
     TimeoutInterceptor,
-} from 'nestjs-mcp';
+} from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class SecureToolProvider {
@@ -589,7 +589,7 @@ import {
     MCPGuard,
     MCPExecutionContext,
     MCPUnauthorizedException,
-} from 'nestjs-mcp';
+} from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class JWTAuthGuard implements MCPGuard {
@@ -618,7 +618,7 @@ import {
     MCPInterceptor,
     MCPExecutionContext,
     MCPCallHandler,
-} from 'nestjs-mcp';
+} from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class CachingInterceptor implements MCPInterceptor {
@@ -693,7 +693,7 @@ Basic module registration with inline options:
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { MCPModule } from 'nestjs-mcp';
+import { MCPModule } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -722,7 +722,7 @@ For dynamic configuration using environment variables or config services:
 ```typescript
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MCPModule } from 'nestjs-mcp';
+import { MCPModule } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -753,7 +753,7 @@ export class AppModule {}
 
 ```typescript
 import { Injectable } from '@nestjs/common';
-import { MCPOptionsFactory, MCPModuleOptions } from 'nestjs-mcp';
+import { MCPOptionsFactory, MCPModuleOptions } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class MCPConfigService implements MCPOptionsFactory {
@@ -784,7 +784,7 @@ Use `forFeature()` when you want to use MCP services without exposing HTTP endpo
 
 ```typescript
 import { Module } from '@nestjs/common';
-import { MCPModule } from 'nestjs-mcp';
+import { MCPModule } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [MCPModule.forFeature()],
@@ -1295,7 +1295,7 @@ npm install --save-dev @types/node
 **Configuration:**
 
 ```typescript
-import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+import { MCPModule, MCPTransportType } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -1365,7 +1365,7 @@ npm install --save-dev @types/express
 **Configuration:**
 
 ```typescript
-import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+import { MCPModule, MCPTransportType } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -1435,7 +1435,7 @@ npm install ioredis
 **Configuration:**
 
 ```typescript
-import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+import { MCPModule, MCPTransportType } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -1521,7 +1521,7 @@ npm install @grpc/grpc-js @grpc/proto-loader
 **Configuration:**
 
 ```typescript
-import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+import { MCPModule, MCPTransportType } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -1556,7 +1556,7 @@ export class AppModule {}
 
 **Proto File Location:**
 
-The proto file is included at `node_modules/nestjs-mcp/dist/transports/proto/mcp.proto`
+The proto file is included at `node_modules/@hmake98/nestjs-mcp/dist/transports/proto/mcp.proto`
 
 **Client Example (Node.js):**
 
@@ -1610,7 +1610,7 @@ stream.write({
 You can enable multiple transports simultaneously:
 
 ```typescript
-import { MCPModule, MCPTransportType } from 'nestjs-mcp';
+import { MCPModule, MCPTransportType } from '@hmake98/nestjs-mcp';
 
 @Module({
     imports: [
@@ -1667,7 +1667,7 @@ For CLI tools or desktop applications (like Claude Desktop), use stdio transport
 
 ```typescript
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { MCPSDKService } from 'nestjs-mcp';
+import { MCPSDKService } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class AppService implements OnApplicationBootstrap {
@@ -1696,7 +1696,7 @@ This enables your MCP server to communicate via standard input/output, which is 
 Core service for handling MCP protocol requests.
 
 ```typescript
-import { MCPService } from 'nestjs-mcp';
+import { MCPService } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class MyService {
@@ -1718,7 +1718,7 @@ export class MyService {
 Registry for managing tools, resources, and prompts.
 
 ```typescript
-import { MCPRegistryService } from 'nestjs-mcp';
+import { MCPRegistryService } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class MyService {
@@ -1751,7 +1751,7 @@ export class MyService {
 Low-level service wrapping the official `@modelcontextprotocol/sdk`.
 
 ```typescript
-import { MCPSDKService } from 'nestjs-mcp';
+import { MCPSDKService } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class MyService {
@@ -1773,7 +1773,7 @@ export class MyService {
 Service for discovering decorated methods.
 
 ```typescript
-import { MCPDiscoveryService } from 'nestjs-mcp';
+import { MCPDiscoveryService } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class MyService {
@@ -1932,7 +1932,7 @@ curl -X POST http://localhost:3000/mcp \
 ```typescript
 // app.module.ts
 import { Module } from '@nestjs/common';
-import { MCPModule } from 'nestjs-mcp';
+import { MCPModule } from '@hmake98/nestjs-mcp';
 import { ToolsService } from './tools.service';
 import { ResourcesService } from './resources.service';
 import { PromptsService } from './prompts.service';
@@ -1958,7 +1958,7 @@ export class AppModule {}
 
 // tools.service.ts
 import { Injectable } from '@nestjs/common';
-import { MCPToolWithParams } from 'nestjs-mcp';
+import { MCPToolWithParams } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class ToolsService {
@@ -1994,7 +1994,7 @@ export class ToolsService {
 
 // resources.service.ts
 import { Injectable } from '@nestjs/common';
-import { MCPResourceTemplate } from 'nestjs-mcp';
+import { MCPResourceTemplate } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class ResourcesService {
@@ -2022,7 +2022,7 @@ export class ResourcesService {
 
 // prompts.service.ts
 import { Injectable } from '@nestjs/common';
-import { MCPPrompt } from 'nestjs-mcp';
+import { MCPPrompt } from '@hmake98/nestjs-mcp';
 
 @Injectable()
 export class PromptsService {

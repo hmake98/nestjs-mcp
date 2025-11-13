@@ -1,5 +1,5 @@
 {
-    "name": "nestjs-mcp",
+    "name": "@hmake98/nestjs-mcp",
     "version": "0.1.0",
     "description": "NestJS package for integrating MCP (Model Context Protocol) servers",
     "main": "dist/index.js",
@@ -41,6 +41,17 @@
     ],
     "author": "hmake98",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/hmake98/nestjs-mcp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/hmake98/nestjs-mcp/issues"
+    },
+    "homepage": "https://github.com/hmake98/nestjs-mcp#readme",
+    "publishConfig": {
+        "access": "public"
+    },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.21.1",
         "zod": "^3.25.76"
