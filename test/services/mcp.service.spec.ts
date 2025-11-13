@@ -617,9 +617,10 @@ describe('MCPService', () => {
                 await serviceWithFaultyHandler.handleRequest(request);
 
             expect(response.error).toBeDefined();
-            expect(Logger.prototype.error).toHaveBeenCalledWith(
+            expect(Logger.prototype.error).toHaveBeenLastCalledWith(
                 'Error in custom error handler:',
-                expect.any(Error),
+                expect.any(String),
+                undefined,
             );
         });
 
@@ -775,6 +776,7 @@ describe('MCPService', () => {
 
             expect(Logger.prototype.debug).toHaveBeenCalledWith(
                 'Handling request: ping',
+                undefined,
             );
         });
     });

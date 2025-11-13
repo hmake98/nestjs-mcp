@@ -1,5 +1,6 @@
 import { ModuleMetadata, Type, Abstract } from '@nestjs/common';
 import { MCPServerInfo, JSONValue } from './mcp-protocol.interface';
+import { LogLevel, LogLevelName } from '../utils/logger';
 
 /**
  * Options for configuring the MCP module
@@ -32,8 +33,16 @@ export interface MCPModuleOptions {
 
     /**
      * Enable request/response logging
+     * @deprecated Use logLevel instead for more granular control
      */
     enableLogging?: boolean;
+
+    /**
+     * Set the log level for the MCP module
+     * Levels: 'error' | 'warn' | 'info' | 'debug' | 'verbose'
+     * Default: 'info'
+     */
+    logLevel?: LogLevel | LogLevelName;
 
     /**
      * Custom error handler

@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Inject, OnModuleDestroy } from '@nestjs/common';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
@@ -10,6 +10,7 @@ import {
 } from '../interfaces';
 import { MCP_MODULE_OPTIONS } from '../constants';
 import { MCPRegistryService } from './mcp-registry.service';
+import { MCPLogger, LogLevel } from '../utils';
 
 /**
  * Service that wraps the official MCP SDK McpServer
@@ -21,7 +22,7 @@ import { MCPRegistryService } from './mcp-registry.service';
  */
 @Injectable()
 export class MCPSDKService implements OnModuleDestroy {
-    private readonly logger = new Logger(MCPSDKService.name);
+    private readonly logger: MCPLogger;
     private mcpServer: McpServer;
     private transport?: StdioServerTransport;
     private isRegistered = false;
@@ -31,6 +32,11 @@ export class MCPSDKService implements OnModuleDestroy {
         private readonly options: MCPModuleOptions,
         private readonly registryService: MCPRegistryService,
     ) {
+        // Initialize logger with configured log level
+        const logLevel =
+            this.options.logLevel ??
+            (this.options.enableLogging ? LogLevel.DEBUG : LogLevel.INFO);
+        this.logger = new MCPLogger(MCPSDKService.name, logLevel);
         this.initializeServer();
     }
 

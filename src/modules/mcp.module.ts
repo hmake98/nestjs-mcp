@@ -2,7 +2,7 @@ import {
     DynamicModule,
     Module,
     OnModuleInit,
-    Logger,
+    Inject,
     Provider,
 } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
@@ -19,18 +19,27 @@ import {
     MCPSDKService,
 } from '../services';
 import { MCPController } from '../controllers';
+import { MCPLogger, LogLevel } from '../utils';
 
 /**
  * Main MCP Module for NestJS integration
  */
 @Module({})
 export class MCPModule implements OnModuleInit {
-    private readonly logger = new Logger(MCPModule.name);
+    private readonly logger: MCPLogger;
 
     constructor(
+        @Inject(MCP_MODULE_OPTIONS)
+        private readonly options: MCPModuleOptions,
         private readonly discoveryService: MCPDiscoveryService,
         private readonly registryService: MCPRegistryService,
-    ) {}
+    ) {
+        // Initialize logger with configured log level
+        const logLevel =
+            this.options.logLevel ??
+            (this.options.enableLogging ? LogLevel.DEBUG : LogLevel.INFO);
+        this.logger = new MCPLogger(MCPModule.name, logLevel);
+    }
 
     /**
      * Register the MCP module with synchronous options

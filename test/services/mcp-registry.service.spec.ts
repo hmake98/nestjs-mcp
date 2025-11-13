@@ -6,19 +6,33 @@ import {
     DiscoveredMCPResource,
     DiscoveredMCPPrompt,
 } from '../../src/interfaces';
+import { MCP_MODULE_OPTIONS } from '../../src/constants';
 
 describe('MCPRegistryService', () => {
     let service: MCPRegistryService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [MCPRegistryService],
+            providers: [
+                MCPRegistryService,
+                {
+                    provide: MCP_MODULE_OPTIONS,
+                    useValue: {
+                        serverInfo: {
+                            name: 'test-server',
+                            version: '1.0.0',
+                        },
+                        enableLogging: false,
+                    },
+                },
+            ],
         }).compile();
 
         service = module.get<MCPRegistryService>(MCPRegistryService);
         // Suppress logger output in tests
         jest.spyOn(Logger.prototype, 'log').mockImplementation();
         jest.spyOn(Logger.prototype, 'warn').mockImplementation();
+        jest.spyOn(Logger.prototype, 'error').mockImplementation();
     });
 
     afterEach(() => {
@@ -76,6 +90,7 @@ describe('MCPRegistryService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 "Tool 'test-tool' is already registered. Overwriting.",
+                undefined,
             );
         });
 
@@ -230,6 +245,7 @@ describe('MCPRegistryService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 "Resource 'file:///test.txt' is already registered. Overwriting.",
+                undefined,
             );
         });
 
@@ -408,6 +424,7 @@ describe('MCPRegistryService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 "Prompt 'test-prompt' is already registered. Overwriting.",
+                undefined,
             );
         });
 
@@ -537,6 +554,7 @@ describe('MCPRegistryService', () => {
             expect(service.getAllPrompts()).toHaveLength(0);
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'Cleared all registrations',
+                undefined,
             );
         });
     });

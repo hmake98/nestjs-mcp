@@ -147,12 +147,15 @@ describe('MCPModule', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'Initializing MCP Module...',
+                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('Discovered and registered'),
+                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'MCP Module initialized successfully',
+                undefined,
             );
         });
 
@@ -166,12 +169,15 @@ describe('MCPModule', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('tools'),
+                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('resources'),
+                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('prompts'),
+                undefined,
             );
         });
     });

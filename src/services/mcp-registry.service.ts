@@ -1,19 +1,33 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import {
     MCPToolDefinition,
     DiscoveredMCPResource,
     DiscoveredMCPPrompt,
+    MCPModuleOptions,
 } from '../interfaces';
+import { MCP_MODULE_OPTIONS } from '../constants';
+import { MCPLogger, LogLevel } from '../utils';
 
 /**
  * Registry service for managing MCP tools, resources, and prompts
  */
 @Injectable()
 export class MCPRegistryService {
-    private readonly logger = new Logger(MCPRegistryService.name);
+    private readonly logger: MCPLogger;
     private readonly tools = new Map<string, MCPToolDefinition>();
     private readonly resources = new Map<string, DiscoveredMCPResource>();
     private readonly prompts = new Map<string, DiscoveredMCPPrompt>();
+
+    constructor(
+        @Inject(MCP_MODULE_OPTIONS)
+        private readonly options: MCPModuleOptions,
+    ) {
+        // Initialize logger with configured log level
+        const logLevel =
+            this.options.logLevel ??
+            (this.options.enableLogging ? LogLevel.DEBUG : LogLevel.INFO);
+        this.logger = new MCPLogger(MCPRegistryService.name, logLevel);
+    }
 
     /**
      * Register a tool

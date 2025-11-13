@@ -94,6 +94,7 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'All discovered items registered with MCP server',
+                undefined,
             );
         });
 
@@ -105,6 +106,7 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 'Items already registered, skipping',
+                undefined,
             );
         });
 
@@ -125,9 +127,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: test-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should register static resources with SDK', () => {
@@ -144,9 +144,7 @@ describe('MCPSDKService', () => {
             registryService.registerResource(resource);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered static resource: Test Resource',
-            );
+            expect(mockMcpServer.registerResource).toHaveBeenCalled();
         });
 
         it('should warn about template resources not being fully supported', () => {
@@ -164,6 +162,7 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 'Template resources not fully supported yet: Dynamic Resource',
+                undefined,
             );
         });
 
@@ -180,9 +179,7 @@ describe('MCPSDKService', () => {
             registryService.registerPrompt(prompt);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered prompt: test-prompt',
-            );
+            expect(mockMcpServer.registerPrompt).toHaveBeenCalled();
         });
     });
 
@@ -199,6 +196,7 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'MCP server connected to stdio transport',
+                undefined,
             );
         });
 
@@ -216,6 +214,7 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'All discovered items registered with MCP server',
+                undefined,
             );
         });
     });
@@ -227,6 +226,7 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'MCP server closed',
+                undefined,
             );
         });
 
@@ -274,9 +274,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: complex-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should handle optional parameters', () => {
@@ -293,9 +291,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: optional-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should handle default values', () => {
@@ -311,9 +307,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: default-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should handle tool handler errors', async () => {
@@ -331,9 +325,7 @@ describe('MCPSDKService', () => {
 
             // The error handling happens inside the SDK registration callback
             // We can verify it was registered
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: error-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should handle non-Error exceptions in tool handlers', async () => {
@@ -349,9 +341,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: string-error-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should handle resources returning arrays', async () => {
@@ -368,9 +358,7 @@ describe('MCPSDKService', () => {
             registryService.registerResource(resource);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered static resource: Multi Resource',
-            );
+            expect(mockMcpServer.registerResource).toHaveBeenCalled();
         });
 
         it('should handle prompts returning arrays', async () => {
@@ -393,9 +381,7 @@ describe('MCPSDKService', () => {
             registryService.registerPrompt(prompt);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered prompt: multi-prompt',
-            );
+            expect(mockMcpServer.registerPrompt).toHaveBeenCalled();
         });
 
         it('should handle prompts with no arguments schema', () => {
@@ -410,9 +396,7 @@ describe('MCPSDKService', () => {
             registryService.registerPrompt(prompt);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered prompt: no-args-prompt',
-            );
+            expect(mockMcpServer.registerPrompt).toHaveBeenCalled();
         });
 
         it('should handle tools with empty parameters', () => {
@@ -426,9 +410,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: no-params-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
     });
 
@@ -784,9 +766,7 @@ describe('MCPSDKService', () => {
             registryService.registerPrompt(prompt);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered prompt: required-args-prompt',
-            );
+            expect(mockMcpServer.registerPrompt).toHaveBeenCalled();
         });
 
         it('should handle prompts with arguments without descriptions', () => {
@@ -805,9 +785,7 @@ describe('MCPSDKService', () => {
             registryService.registerPrompt(prompt);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered prompt: no-desc-args-prompt',
-            );
+            expect(mockMcpServer.registerPrompt).toHaveBeenCalled();
         });
 
         it('should handle prompt handler with null args', async () => {
@@ -882,9 +860,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: no-desc-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should handle unknown parameter type falling back to any', () => {
@@ -901,9 +877,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: unknown-type-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
 
         it('should handle parameters with all options', () => {
@@ -925,9 +899,7 @@ describe('MCPSDKService', () => {
             registryService.registerTool(tool);
             service.registerDiscoveredItems();
 
-            expect(Logger.prototype.debug).toHaveBeenCalledWith(
-                'Registered tool: full-options-tool',
-            );
+            expect(mockMcpServer.registerTool).toHaveBeenCalled();
         });
     });
 

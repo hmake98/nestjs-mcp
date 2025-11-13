@@ -20,5 +20,8 @@ export * from './interfaces';
 // Constants
 export * from './constants';
 
+// Utilities
+export * from './utils';
+
 // Utils
 export * from './utils';

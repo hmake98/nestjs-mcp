@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import {
     MCPRequest,
     MCPResponse,
@@ -18,21 +18,32 @@ import {
     MCP_MODULE_OPTIONS,
 } from '../constants';
 import { MCPRegistryService } from './mcp-registry.service';
-import { safeValidateWithZod, zodToJsonSchema } from '../utils';
+import {
+    safeValidateWithZod,
+    zodToJsonSchema,
+    MCPLogger,
+    LogLevel,
+} from '../utils';
 
 /**
  * Main MCP service for handling protocol requests
  */
 @Injectable()
 export class MCPService {
-    private readonly logger = new Logger(MCPService.name);
+    private readonly logger: MCPLogger;
     private initialized = false;
 
     constructor(
         @Inject(MCP_MODULE_OPTIONS)
         private readonly options: MCPModuleOptions,
         private readonly registryService: MCPRegistryService,
-    ) {}
+    ) {
+        // Initialize logger with configured log level
+        const logLevel =
+            this.options.logLevel ??
+            (this.options.enableLogging ? LogLevel.DEBUG : LogLevel.INFO);
+        this.logger = new MCPLogger(MCPService.name, logLevel);
+    }
 
     /**
      * Get the SDK server instance (for advanced usage)
