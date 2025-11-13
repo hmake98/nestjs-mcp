@@ -2,6 +2,8 @@
  * Core MCP Protocol interfaces based on the Model Context Protocol specification
  */
 
+import { z } from 'zod';
+
 /**
  * Generic JSON value type
  */
@@ -61,6 +63,11 @@ export interface MCPToolDefinition {
     description: string;
     parameters: MCPToolParameter[];
     handler: (params: JSONObject) => Promise<JSONValue> | JSONValue;
+    /**
+     * Optional Zod schema for runtime validation
+     * If provided, input will be validated before calling the handler
+     */
+    schema?: z.ZodObject<z.ZodRawShape>;
 }
 
 export interface MCPToolResult {
@@ -190,6 +197,10 @@ export interface DiscoveredMCPResource {
     handler: (
         variables?: Record<string, string>,
     ) => Promise<JSONValue> | JSONValue;
+    /**
+     * Optional Zod schema for runtime validation of URI template variables
+     */
+    schema?: z.ZodObject<z.ZodRawShape>;
 }
 
 /**
@@ -204,4 +215,8 @@ export interface DiscoveredMCPPrompt {
         required?: boolean;
     }>;
     handler: (args: JSONObject) => Promise<JSONValue> | JSONValue;
+    /**
+     * Optional Zod schema for runtime validation of prompt arguments
+     */
+    schema?: z.ZodObject<z.ZodRawShape>;
 }

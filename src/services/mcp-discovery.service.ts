@@ -13,6 +13,7 @@ import {
     DiscoveredMCPResource,
     DiscoveredMCPPrompt,
 } from '../interfaces';
+import { zodSchemaToMCPParameters } from '../utils';
 
 /**
  * Service responsible for discovering MCP tools, resources, and prompts
@@ -58,14 +59,17 @@ export class MCPDiscoveryService {
 
                     const method = instance[methodName].bind(instance);
 
+                    // If schema is provided, use it to generate parameters
+                    const parameters = toolMetadata.schema
+                        ? zodSchemaToMCPParameters(toolMetadata.schema)
+                        : this.extractParameters(method, paramMetadata);
+
                     tools.push({
                         name: toolMetadata.name,
                         description: toolMetadata.description,
-                        parameters: this.extractParameters(
-                            method,
-                            paramMetadata,
-                        ),
+                        parameters,
                         handler: method,
+                        schema: toolMetadata.schema, // Store schema for runtime validation
                     });
                 }
             });
@@ -135,9 +139,35 @@ export class MCPDiscoveryService {
 
                 if (promptMetadata) {
                     const method = instance[methodName].bind(instance);
+
+                    // Extract arguments from schema if provided
+                    let arguments_: Array<{
+                        name: string;
+                        description?: string;
+                        required?: boolean;
+                    }> = promptMetadata.arguments || [];
+
+                    if (
+                        promptMetadata.schema &&
+                        (!arguments_ || arguments_.length === 0)
+                    ) {
+                        // Generate arguments from schema
+                        const parameters = zodSchemaToMCPParameters(
+                            promptMetadata.schema,
+                        );
+                        arguments_ = parameters.map((p) => ({
+                            name: p.name,
+                            description: p.description,
+                            required: p.required,
+                        }));
+                    }
+
                     prompts.push({
-                        ...promptMetadata,
+                        name: promptMetadata.name,
+                        description: promptMetadata.description,
+                        arguments: arguments_,
                         handler: method,
+                        schema: promptMetadata.schema, // Store schema for runtime validation
                     });
                 }
             });

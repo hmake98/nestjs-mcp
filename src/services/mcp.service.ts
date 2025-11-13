@@ -18,6 +18,7 @@ import {
     MCP_MODULE_OPTIONS,
 } from '../constants';
 import { MCPRegistryService } from './mcp-registry.service';
+import { safeValidateWithZod, zodToJsonSchema } from '../utils';
 
 /**
  * Main MCP service for handling protocol requests
@@ -121,17 +122,26 @@ export class MCPService {
             jsonrpc: '2.0',
             id: request.id,
             result: {
-                tools: tools.map((tool) => ({
-                    name: tool.name,
-                    description: tool.description,
-                    inputSchema: {
-                        type: 'object',
-                        properties: this.buildParameterSchema(tool.parameters),
-                        required: tool.parameters
-                            .filter((p) => p.required)
-                            .map((p) => p.name),
-                    },
-                })),
+                tools: tools.map((tool) => {
+                    // If Zod schema is available, use it to generate JSON Schema
+                    const inputSchema = tool.schema
+                        ? zodToJsonSchema(tool.schema)
+                        : {
+                              type: 'object',
+                              properties: this.buildParameterSchema(
+                                  tool.parameters,
+                              ),
+                              required: tool.parameters
+                                  .filter((p) => p.required)
+                                  .map((p) => p.name),
+                          };
+
+                    return {
+                        name: tool.name,
+                        description: tool.description,
+                        inputSchema,
+                    };
+                }),
             },
         };
     }
@@ -166,7 +176,21 @@ export class MCPService {
         }
 
         try {
-            const result = await tool.handler(args);
+            // Validate input with Zod schema if provided
+            let validatedArgs = args;
+            if (tool.schema) {
+                const validation = safeValidateWithZod(tool.schema, args);
+                if (!validation.success) {
+                    return this.createErrorResponse(
+                        request.id,
+                        MCPErrorCode.INVALID_PARAMS,
+                        `Invalid tool arguments: ${validation.error.message}`,
+                    );
+                }
+                validatedArgs = validation.data as JSONObject;
+            }
+
+            const result = await tool.handler(validatedArgs);
             const toolResult: MCPToolResult = this.normalizeToolResult(result);
 
             return {
@@ -250,7 +274,24 @@ export class MCPService {
                   )
                 : {};
 
-            const content = await resource.handler(variables);
+            // Validate URI template variables with Zod schema if provided
+            let validatedVariables = variables;
+            if (resource.schema && Object.keys(variables).length > 0) {
+                const validation = safeValidateWithZod(
+                    resource.schema,
+                    variables,
+                );
+                if (!validation.success) {
+                    return this.createErrorResponse(
+                        request.id,
+                        MCPErrorCode.INVALID_PARAMS,
+                        `Invalid resource variables: ${validation.error.message}`,
+                    );
+                }
+                validatedVariables = validation.data as Record<string, string>;
+            }
+
+            const content = await resource.handler(validatedVariables);
 
             return {
                 jsonrpc: '2.0',
@@ -313,7 +354,21 @@ export class MCPService {
         }
 
         try {
-            const messages = await prompt.handler(args);
+            // Validate prompt arguments with Zod schema if provided
+            let validatedArgs = args;
+            if (prompt.schema) {
+                const validation = safeValidateWithZod(prompt.schema, args);
+                if (!validation.success) {
+                    return this.createErrorResponse(
+                        request.id,
+                        MCPErrorCode.INVALID_PARAMS,
+                        `Invalid prompt arguments: ${validation.error.message}`,
+                    );
+                }
+                validatedArgs = validation.data as JSONObject;
+            }
+
+            const messages = await prompt.handler(validatedArgs);
 
             return {
                 jsonrpc: '2.0',

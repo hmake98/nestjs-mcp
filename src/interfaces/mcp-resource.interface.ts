@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 /**
  * Metadata for MCP resource
  */
@@ -6,6 +8,11 @@ export interface MCPResourceMetadata {
     name: string;
     description?: string;
     mimeType?: string;
+    /**
+     * Zod schema for validating resource read parameters
+     * Use this for static resources that may accept query parameters
+     */
+    schema?: z.ZodObject<z.ZodRawShape>;
 }
 
 /**
@@ -16,4 +23,9 @@ export interface MCPResourceTemplateMetadata {
     name: string;
     description?: string;
     mimeType?: string;
+    /**
+     * Zod schema for validating URI template variables
+     * This ensures that extracted variables from the URI match expected types
+     */
+    schema?: z.ZodObject<z.ZodRawShape>;
 }
