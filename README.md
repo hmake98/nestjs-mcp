@@ -1,4 +1,4 @@
-# nestjs-mcp
+# @hmake98/nestjs-mcp
 
 ![Statements](https://img.shields.io/badge/statements-98.65%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-86.75%25-yellow.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-97.61%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.62%25-brightgreen.svg?style=flat)
 
