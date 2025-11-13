@@ -98,8 +98,6 @@
     "searchInComments": true,
     "searchInDocuments": true,
 
-    "plugin": ["typedoc-plugin-markdown"],
-
     "validation": {
         "notExported": true,
         "invalidLink": true,
