@@ -903,4 +903,109 @@ describe('MCPService', () => {
             expect(result.content).toHaveLength(1);
         });
     });
+
+    describe('edge cases for branch coverage', () => {
+        it('should handle initialize request when capabilities is undefined', async () => {
+            const optionsWithoutCapabilities: MCPModuleOptions = {
+                serverInfo: {
+                    name: 'Test Server',
+                    version: '1.0.0',
+                    capabilities: undefined as unknown as {
+                        tools: object;
+                        resources: object;
+                        prompts: object;
+                    },
+                },
+                enableLogging: false,
+            };
+
+            const module: TestingModule = await Test.createTestingModule({
+                providers: [
+                    MCPService,
+                    MCPRegistryService,
+                    MCPExecutionService,
+                    {
+                        provide: MCP_MODULE_OPTIONS,
+                        useValue: optionsWithoutCapabilities,
+                    },
+                    {
+                        provide: ModuleRef,
+                        useValue: {
+                            get: jest.fn(),
+                        },
+                    },
+                ],
+            }).compile();
+
+            const testService = module.get<MCPService>(MCPService);
+
+            const request: MCPRequest = {
+                jsonrpc: '2.0',
+                id: 500,
+                method: MCPMethod.INITIALIZE,
+                params: {},
+            };
+
+            const response = await testService.handleRequest(request);
+
+            expect(response.jsonrpc).toBe('2.0');
+            expect(response.id).toBe(500);
+            expect(response.result).toHaveProperty('capabilities');
+            const result = response.result as {
+                capabilities: object;
+            };
+            expect(result.capabilities).toEqual({});
+        });
+
+        it('should handle tools/call request when params is undefined', async () => {
+            const tool: MCPToolDefinition = {
+                name: 'test-tool',
+                description: 'Test tool',
+                parameters: [],
+                handler: async () => ({ content: [], isError: false }),
+            };
+
+            registryService.registerTool(tool);
+
+            const request: MCPRequest = {
+                jsonrpc: '2.0',
+                id: 501,
+                method: MCPMethod.TOOLS_CALL,
+                params: undefined,
+            };
+
+            const response = await service.handleRequest(request);
+
+            expect(response.error).toBeDefined();
+            expect(response.error?.code).toBe(MCPErrorCode.INVALID_PARAMS);
+            expect(response.error?.message).toBe('Tool name is required');
+        });
+
+        it('should log deprecation warning when deprecationMessage is undefined', async () => {
+            const deprecatedTool: MCPToolDefinition = {
+                name: 'deprecated-tool',
+                description: 'Deprecated tool',
+                parameters: [],
+                handler: async () => ({ content: [], isError: false }),
+                deprecated: true,
+                deprecationMessage: undefined,
+            };
+
+            registryService.registerTool(deprecatedTool);
+
+            const request: MCPRequest = {
+                jsonrpc: '2.0',
+                id: 502,
+                method: MCPMethod.TOOLS_CALL,
+                params: { name: 'deprecated-tool', arguments: {} },
+            };
+
+            await service.handleRequest(request);
+
+            expect(Logger.prototype.warn).toHaveBeenCalledWith(
+                "Tool 'deprecated-tool' is deprecated. ",
+                undefined,
+            );
+        });
+    });
 });

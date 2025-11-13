@@ -34,6 +34,27 @@ describe('RateLimitGuard', () => {
             const partialGuard = new RateLimitGuard({ limit: 20 });
             expect(partialGuard).toBeDefined();
         });
+
+        it('should use default limit when only window provided', () => {
+            const windowOnlyGuard = new RateLimitGuard({ window: 30000 });
+            expect(windowOnlyGuard).toBeDefined();
+        });
+
+        it('should handle config with undefined limit', () => {
+            const undefinedLimitGuard = new RateLimitGuard({
+                limit: undefined,
+                window: 30000,
+            });
+            expect(undefinedLimitGuard).toBeDefined();
+        });
+
+        it('should handle config with undefined window', () => {
+            const undefinedWindowGuard = new RateLimitGuard({
+                limit: 5,
+                window: undefined,
+            });
+            expect(undefinedWindowGuard).toBeDefined();
+        });
     });
 
     describe('canActivate', () => {

@@ -27,6 +27,55 @@ describe('Zod Helpers', () => {
 
             expect(parameters[0]).not.toHaveProperty('default');
         });
+
+        it('should handle undefined default value', () => {
+            // Test when default value is undefined (non-JSON primitive)
+            const schema = z.object({
+                field: z.string().default(() => undefined as unknown as string),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            // When toJSONValue receives undefined, it returns null (line 45)
+            // But the parameter should not have a default property when it's undefined
+            expect(parameters[0].name).toBe('field');
+        });
+
+        it('should handle function default value that returns undefined', () => {
+            // Test default function that returns undefined
+            const schema = z.object({
+                optField: z.any().default(() => undefined),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters).toHaveLength(1);
+            expect(parameters[0].name).toBe('optField');
+        });
+
+        it('should handle BigInt in default value (non-JSON type)', () => {
+            // BigInt is not a JSON type, should trigger line 45 return null
+            const schema = z.object({
+                field: z.any().default(() => BigInt(123)),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters).toHaveLength(1);
+            // The default value will be processed through toJSONValue
+            // which returns null for non-JSON types
+        });
+
+        it('should handle Symbol in default value (non-JSON type)', () => {
+            // Symbol is not a JSON type, should trigger line 45 return null
+            const schema = z.object({
+                field: z.any().default(() => Symbol('test')),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters).toHaveLength(1);
+        });
     });
 
     describe('zodToJsonSchema', () => {
@@ -40,6 +89,19 @@ describe('Zod Helpers', () => {
             });
         });
 
+        it('should convert ZodString without checks to JSON Schema', () => {
+            const schema = z.string().describe('A string without checks');
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'string',
+                description: 'A string without checks',
+            });
+            // Verify no minLength or maxLength properties
+            expect(jsonSchema).not.toHaveProperty('minLength');
+            expect(jsonSchema).not.toHaveProperty('maxLength');
+        });
+
         it('should convert ZodNumber to JSON Schema', () => {
             const schema = z.number().min(0).max(100).describe('A number');
             const jsonSchema = zodToJsonSchema(schema);
@@ -50,6 +112,19 @@ describe('Zod Helpers', () => {
                 minimum: 0,
                 maximum: 100,
             });
+        });
+
+        it('should convert ZodNumber without checks to JSON Schema', () => {
+            const schema = z.number().describe('A number without checks');
+            const jsonSchema = zodToJsonSchema(schema);
+
+            expect(jsonSchema).toEqual({
+                type: 'number',
+                description: 'A number without checks',
+            });
+            // Verify no minimum or maximum properties
+            expect(jsonSchema).not.toHaveProperty('minimum');
+            expect(jsonSchema).not.toHaveProperty('maximum');
         });
 
         it('should convert ZodBoolean to JSON Schema', () => {
@@ -515,10 +590,9 @@ describe('Zod Helpers', () => {
 
     describe('zodSchemaToMCPParameters - description inheritance', () => {
         it('should inherit description from inner schema of optional when outer has no description', () => {
-            // This triggers line 245 - optional without own description, inner has description
-            const innerSchema = z.string().describe('Inner description');
+            // This triggers line 244-245 - optional without own description, inner has description
             const schema = z.object({
-                field: innerSchema.optional(),
+                field: z.string().describe('Inner description').optional(),
             });
 
             const parameters = zodSchemaToMCPParameters(schema);
@@ -527,11 +601,26 @@ describe('Zod Helpers', () => {
             expect(parameters[0].required).toBe(false);
         });
 
-        it('should inherit description from inner schema of default when outer has no description', () => {
-            // This triggers line 256 - default without own description, inner has description
-            const innerSchema = z.string().describe('Inner description');
+        it('should not override existing description for optional', () => {
+            // Test when optional wrapper has its own description
             const schema = z.object({
-                field: innerSchema.default('test'),
+                field: z
+                    .string()
+                    .describe('Inner description')
+                    .optional()
+                    .describe('Outer description'),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].description).toBe('Outer description');
+            expect(parameters[0].required).toBe(false);
+        });
+
+        it('should inherit description from inner schema of default when outer has no description', () => {
+            // This triggers line 255-256 - default without own description, inner has description
+            const schema = z.object({
+                field: z.string().describe('Inner description').default('test'),
             });
 
             const parameters = zodSchemaToMCPParameters(schema);
@@ -540,16 +629,64 @@ describe('Zod Helpers', () => {
             expect(parameters[0].default).toBe('test');
         });
 
-        it('should inherit description from inner schema of nullable when outer has no description', () => {
-            // This triggers line 265 - nullable without own description, inner has description
-            const innerSchema = z.string().describe('Inner description');
+        it('should not override existing description for default', () => {
+            // Test when default wrapper has its own description
             const schema = z.object({
-                field: innerSchema.nullable(),
+                field: z
+                    .string()
+                    .describe('Inner description')
+                    .default('test')
+                    .describe('Outer description'),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].description).toBe('Outer description');
+            expect(parameters[0].default).toBe('test');
+        });
+
+        it('should inherit description from inner schema of nullable when outer has no description', () => {
+            // This triggers line 264-265 - nullable without own description, inner has description
+            const schema = z.object({
+                field: z.string().describe('Inner description').nullable(),
             });
 
             const parameters = zodSchemaToMCPParameters(schema);
 
             expect(parameters[0].description).toBe('Inner description');
+        });
+
+        it('should not override existing description for nullable', () => {
+            // Test when nullable wrapper has its own description
+            const schema = z.object({
+                field: z
+                    .string()
+                    .describe('Inner description')
+                    .nullable()
+                    .describe('Outer description'),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].description).toBe('Outer description');
+        });
+
+        it('should handle complex nested wrappers with description inheritance', () => {
+            // Test optional wrapped around default wrapped around nullable
+            const schema = z.object({
+                complexField: z
+                    .string()
+                    .describe('Deep inner description')
+                    .nullable()
+                    .default('test')
+                    .optional(),
+            });
+
+            const parameters = zodSchemaToMCPParameters(schema);
+
+            expect(parameters[0].description).toBe('Deep inner description');
+            expect(parameters[0].required).toBe(false);
+            expect(parameters[0].default).toBe('test');
         });
     });
 });
