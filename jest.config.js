@@ -32,15 +32,17 @@ module.exports = {
     coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
     coverageThreshold: {
         global: {
-            branches: 80,
-            functions: 80,
-            lines: 80,
-            statements: 80,
+            branches: 90,
+            functions: 90,
+            lines: 90,
+            statements: 90,
         },
     },
     moduleFileExtensions: ['ts', 'js', 'json'],
     setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
     testTimeout: 5000,
+    coverageProvider: 'v8',
+    coveragePathIgnorePatterns: ['<rootDir>/src/interfaces/.*\\.ts$'],
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
     },
