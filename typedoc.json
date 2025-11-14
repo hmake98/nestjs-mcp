@@ -120,14 +120,4 @@
     "cacheBust": true,
 
     "hostedBaseUrl": "https://hmake98.github.io/nestjs-mcp/",
-
-    "sidebarLinks": {
-        "GitHub": "https://github.com/hmake98/nestjs-mcp",
-        "NPM": "https://www.npmjs.com/package/nestjs-mcp"
-    },
-
-    "navigationLinks": {
-        "GitHub": "https://github.com/hmake98/nestjs-mcp",
-        "NPM": "https://www.npmjs.com/package/nestjs-mcp"
-    }
 }
