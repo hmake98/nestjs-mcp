@@ -2,7 +2,7 @@
 
 ![Statements](https://img.shields.io/badge/statements-98.17%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-92.55%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-98.66%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.17%25-brightgreen.svg?style=flat)
 
-A NestJS library for integrating the Model Context Protocol (MCP) into your applications. Built on top of the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) v1.21.1, this package provides a decorator-based approach to building MCP servers with NestJS.
+A NestJS library for integrating the Model Context Protocol (MCP) into your applications. Built on top of the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) 1.21.1, this package provides a decorator-based approach to building MCP servers with NestJS.
 
 ## Table of Contents
 
@@ -35,7 +35,7 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 - 📡 **Real-time Communication**: WebSocket and SSE for bidirectional and streaming data
 - 🔀 **Distributed Systems**: Redis adapter for multi-process clusters and horizontal scaling
 - ⚡ **High Performance**: gRPC support for microservices and high-throughput scenarios
-- 📦 **Official SDK Integration**: Powered by `@modelcontextprotocol/sdk` v1.21.1 with modern `McpServer` API
+- 📦 **Official SDK Integration**: Powered by `@modelcontextprotocol/sdk` 1.21.1 with modern `McpServer` API
 - 🔧 **TypeScript First**: Full type safety and IntelliSense support with Zod schema validation
 - 📌 **Versioning & Deprecation**: Track versions and manage API evolution with built-in deprecation support
 - 🎨 **Flexible Configuration**: Sync and async module configuration options
@@ -413,14 +413,14 @@ npm run start
 # Generate the client
 npx @hmake98/nestjs-mcp client:generate \
   --url http://localhost:3000/mcp \
-  --out ./mcp-client \
+  --out ./mcp \
   --name my-mcp-client
 ```
 
 ### Usage
 
 ```typescript
-import { createClient } from './mcp-client';
+import { createClient } from './mcp';
 
 const mcp = createClient('http://localhost:3000/mcp');
 
@@ -449,7 +449,7 @@ await mcp.prompts['review-code']({
 ### Generated Structure
 
 ```
-mcp-client/
+mcp/
 ├── index.ts          # Main entry with createClient()
 ├── client.ts         # Base MCPClient class
 ├── package.json      # Client metadata
@@ -515,8 +515,8 @@ npx @hmake98/nestjs-mcp client:generate [options]
 
 Options:
   --url <url>         MCP server URL (required)
-  --out <directory>   Output directory (default: ./mcp-client)
-  --name <name>       Client package name (default: mcp-client)
+  --out <directory>   Output directory (default: ./mcp)
+  --name <name>       Client package name (default: mcp)
   -V, --version       Output version number
   -h, --help          Display help
 ```
@@ -526,7 +526,7 @@ Options:
 When you update your MCP server (add/remove/modify tools), regenerate the client:
 
 ```bash
-npx @hmake98/nestjs-mcp client:generate --url http://localhost:3000/mcp --out ./mcp-client
+npx @hmake98/nestjs-mcp client:generate --url http://localhost:3000/mcp --out ./mcp
 ```
 
 The client will be updated with the latest server definitions.
@@ -1044,6 +1044,8 @@ The library supports versioning and deprecation tracking for tools, resources, a
 Add a `version` field to any decorator to track the version of your MCP items:
 
 ```typescript
+import { z } from 'zod';
+
 @MCPTool({
     name: 'data-processor',
     description: 'Process data with advanced algorithms',
@@ -1060,6 +1062,8 @@ async processData({ data }: { data: string }) {
 Mark items as deprecated with detailed migration information:
 
 ```typescript
+import { z } from 'zod';
+
 @MCPTool({
     name: 'legacy-calculator',
     description: 'Old calculation method',
@@ -1136,6 +1140,10 @@ When clients list tools, resources, or prompts, they receive version and depreca
 ### Full Example with All MCP Types
 
 ```typescript
+import { Injectable } from '@nestjs/common';
+import { MCPTool, MCPResource, MCPPrompt } from '@hmake98/nestjs-mcp';
+import { z } from 'zod';
+
 @Injectable()
 export class VersionedService {
     // Current tool
@@ -1212,6 +1220,14 @@ export class VersionedService {
                 },
             },
         ];
+    }
+
+    private processV1(input: string) {
+        return `v1: ${input}`;
+    }
+
+    private processV3(input: string) {
+        return `v3: ${input}`;
     }
 }
 ```
@@ -1849,7 +1865,7 @@ interface MCPToolResult {
 
 ## Architecture
 
-This package integrates the official `@modelcontextprotocol/sdk` v1.21.1 with NestJS using a layered architecture:
+This package integrates the official `@modelcontextprotocol/sdk` 1.21.1 with NestJS using a layered architecture:
 
 ```
 ┌─────────────────────────────────────────┐
@@ -1898,7 +1914,7 @@ This package integrates the official `@modelcontextprotocol/sdk` v1.21.1 with Ne
                   │
 ┌─────────────────▼───────────────────────┐
 │   @modelcontextprotocol/sdk             │
-│   (Official MCP SDK v1.21.1)            │
+│   (Official MCP SDK 1.21.1)             │
 └─────────────────────────────────────────┘
 ```
 
