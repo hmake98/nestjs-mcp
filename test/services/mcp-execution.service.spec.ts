@@ -408,4 +408,99 @@ describe('MCPExecutionService', () => {
             expect(handler).toHaveBeenCalled();
         });
     });
+
+    describe('error handling in guard/interceptor resolution', () => {
+        it('should throw when guard cannot be resolved from moduleRef', async () => {
+            class CustomGuard implements MCPGuard {
+                async canActivate(
+                    _context: MCPExecutionContext,
+                ): Promise<boolean> {
+                    return true;
+                }
+            }
+
+            // Mock both create and get to fail
+            moduleRef.create.mockRejectedValue(new Error('Create failed'));
+            moduleRef.get.mockImplementation(() => {
+                throw new Error('Get failed');
+            });
+
+            const handler = jest.fn();
+
+            await expect(
+                service.executeWithGuardsAndInterceptors(
+                    [CustomGuard],
+                    [],
+                    mockContext,
+                    handler,
+                ),
+            ).rejects.toThrow();
+        });
+
+        it('should throw when interceptor cannot be resolved from moduleRef', async () => {
+            class CustomInterceptor implements MCPInterceptor {
+                async intercept(
+                    _context: MCPExecutionContext,
+                    next: MCPCallHandler,
+                ): Promise<unknown> {
+                    return next.handle();
+                }
+            }
+
+            // Mock both create and get to fail
+            moduleRef.create.mockRejectedValue(new Error('Create failed'));
+            moduleRef.get.mockImplementation(() => {
+                throw new Error('Get failed');
+            });
+
+            const handler = jest.fn();
+
+            await expect(
+                service.executeWithGuardsAndInterceptors(
+                    [],
+                    [CustomInterceptor],
+                    mockContext,
+                    handler,
+                ),
+            ).rejects.toThrow();
+        });
+
+        it('should fallback to get when create fails for guard', async () => {
+            moduleRef.create.mockRejectedValueOnce(new Error('Create failed'));
+            moduleRef.get.mockReturnValue(new TestGuard());
+
+            const handler = jest.fn().mockResolvedValue('result');
+
+            const result = await service.executeWithGuardsAndInterceptors(
+                [TestGuard],
+                [],
+                mockContext,
+                handler,
+            );
+
+            expect(result).toBe('result');
+            expect(moduleRef.get).toHaveBeenCalledWith(TestGuard, {
+                strict: false,
+            });
+        });
+
+        it('should fallback to get when create fails for interceptor', async () => {
+            moduleRef.create.mockRejectedValueOnce(new Error('Create failed'));
+            moduleRef.get.mockReturnValue(new TestInterceptor());
+
+            const handler = jest.fn().mockResolvedValue('result');
+
+            const result = await service.executeWithGuardsAndInterceptors(
+                [],
+                [TestInterceptor],
+                mockContext,
+                handler,
+            );
+
+            expect(result).toBe('result');
+            expect(moduleRef.get).toHaveBeenCalledWith(TestInterceptor, {
+                strict: false,
+            });
+        });
+    });
 });

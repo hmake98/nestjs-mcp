@@ -10,6 +10,7 @@ import {
     MCPToolDefinition,
     DiscoveredMCPResource,
     DiscoveredMCPPrompt,
+    MCPException,
 } from '../../src/interfaces';
 import {
     MCP_MODULE_OPTIONS,
@@ -813,7 +814,6 @@ describe('MCPService', () => {
 
             expect(Logger.prototype.debug).toHaveBeenCalledWith(
                 'Handling request: ping',
-                undefined,
             );
         });
     });
@@ -1004,8 +1004,75 @@ describe('MCPService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 "Tool 'deprecated-tool' is deprecated. ",
-                undefined,
             );
+        });
+    });
+
+    describe('MCPException handling', () => {
+        it('should handle MCPException in resources/read', async () => {
+            const resource: DiscoveredMCPResource = {
+                uri: 'file:///error.txt',
+                name: 'Error Resource',
+                handler: async () => {
+                    throw new MCPException(-32001, 'Custom error', {
+                        details: 'test',
+                    });
+                },
+            };
+
+            registryService.registerResource(resource);
+
+            const request: MCPRequest = {
+                jsonrpc: '2.0',
+                id: 1000,
+                method: MCPMethod.RESOURCES_READ,
+                params: { uri: 'file:///error.txt' },
+            };
+
+            const response = await service.handleRequest(request);
+
+            expect(response).toEqual({
+                jsonrpc: '2.0',
+                id: 1000,
+                error: {
+                    code: -32001,
+                    message: 'Custom error',
+                    data: { details: 'test' },
+                },
+            });
+        });
+
+        it('should handle MCPException in prompts/get', async () => {
+            const prompt: DiscoveredMCPPrompt = {
+                name: 'error-prompt',
+                description: 'Error Prompt',
+                handler: async () => {
+                    throw new MCPException(-32002, 'Prompt error', {
+                        reason: 'invalid',
+                    });
+                },
+            };
+
+            registryService.registerPrompt(prompt);
+
+            const request: MCPRequest = {
+                jsonrpc: '2.0',
+                id: 1001,
+                method: MCPMethod.PROMPTS_GET,
+                params: { name: 'error-prompt', arguments: {} },
+            };
+
+            const response = await service.handleRequest(request);
+
+            expect(response).toEqual({
+                jsonrpc: '2.0',
+                id: 1001,
+                error: {
+                    code: -32002,
+                    message: 'Prompt error',
+                    data: { reason: 'invalid' },
+                },
+            });
         });
     });
 });

@@ -136,26 +136,23 @@ describe('MCPModule', () => {
         });
     });
 
-    describe('onModuleInit', () => {
+    describe('onApplicationBootstrap', () => {
         it('should discover and register tools on initialization', async () => {
             const module: TestingModule = await Test.createTestingModule({
                 imports: [MCPModule.forRoot(mockOptions)],
             }).compile();
 
             const mcpModule = module.get(MCPModule);
-            await mcpModule.onModuleInit();
+            await mcpModule.onApplicationBootstrap();
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'Initializing MCP Module...',
-                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('Discovered and registered'),
-                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'MCP Module initialized successfully',
-                undefined,
             );
         });
 
@@ -165,19 +162,16 @@ describe('MCPModule', () => {
             }).compile();
 
             const mcpModule = module.get(MCPModule);
-            await mcpModule.onModuleInit();
+            await mcpModule.onApplicationBootstrap();
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('tools'),
-                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('resources'),
-                undefined,
             );
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 expect.stringContaining('prompts'),
-                undefined,
             );
         });
     });

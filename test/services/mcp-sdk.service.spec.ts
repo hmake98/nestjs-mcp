@@ -94,7 +94,6 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'All discovered items registered with MCP server',
-                undefined,
             );
         });
 
@@ -106,7 +105,6 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 'Items already registered, skipping',
-                undefined,
             );
         });
 
@@ -162,7 +160,6 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 'Template resources not fully supported yet: Dynamic Resource',
-                undefined,
             );
         });
 
@@ -196,7 +193,6 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'MCP server connected to stdio transport',
-                undefined,
             );
         });
 
@@ -214,7 +210,6 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'All discovered items registered with MCP server',
-                undefined,
             );
         });
     });
@@ -226,7 +221,6 @@ describe('MCPSDKService', () => {
 
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'MCP server closed',
-                undefined,
             );
         });
 

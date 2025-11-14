@@ -8,6 +8,7 @@ import {
     MCP_RESOURCE_METADATA,
     MCP_PROMPT_METADATA,
     MCP_TOOL_PARAM_METADATA,
+    MCP_MODULE_OPTIONS,
 } from '../../src/constants';
 
 // Test provider with decorated methods
@@ -76,6 +77,12 @@ describe('MCPDiscoveryService', () => {
                     provide: Reflector,
                     useValue: {
                         get: jest.fn(),
+                    },
+                },
+                {
+                    provide: MCP_MODULE_OPTIONS,
+                    useValue: {
+                        enableLogging: false,
                     },
                 },
             ],
@@ -608,6 +615,93 @@ describe('MCPDiscoveryService', () => {
             const prompts = service.discoverPrompts();
 
             expect(prompts).toHaveLength(2);
+        });
+    });
+
+    describe('edge cases for parameter extraction', () => {
+        it('should handle methods with paramMetadata having names', () => {
+            @Injectable()
+            class ProviderWithNamedParams {
+                toolMethod() {
+                    return 'result';
+                }
+            }
+
+            const instance = new ProviderWithNamedParams();
+            const wrapper = {
+                instance,
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'toolMethod',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_TOOL_METADATA) {
+                    return {
+                        name: 'test-tool',
+                        description: 'Test tool',
+                    };
+                }
+                if (key === MCP_TOOL_PARAM_METADATA) {
+                    return [
+                        {
+                            name: 'param1',
+                            type: 'string',
+                            description: 'First param',
+                        },
+                    ];
+                }
+                return undefined;
+            });
+
+            const tools = service.discoverTools();
+
+            expect(tools).toHaveLength(1);
+            expect(tools[0].parameters).toEqual([
+                { name: 'param1', type: 'string', description: 'First param' },
+            ]);
+        });
+
+        it('should return empty parameters when no match in function signature', () => {
+            @Injectable()
+            class ProviderWithNoParams {
+                // Arrow function with no params
+                toolMethod = () => 'result';
+            }
+
+            const instance = new ProviderWithNoParams();
+            const wrapper = {
+                instance,
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'toolMethod',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_TOOL_METADATA) {
+                    return {
+                        name: 'test-tool',
+                        description: 'Test tool',
+                    };
+                }
+                if (key === MCP_TOOL_PARAM_METADATA) {
+                    return [];
+                }
+                return undefined;
+            });
+
+            const tools = service.discoverTools();
+
+            expect(tools).toHaveLength(1);
+            expect(tools[0].parameters).toEqual([]);
         });
     });
 });

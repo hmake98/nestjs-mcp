@@ -150,10 +150,7 @@ describe('MCPLogger', () => {
         it('should log warning when level is WARN or higher', () => {
             logger.setLogLevel(LogLevel.WARN);
             logger.warn('Test warning');
-            expect(nestLoggerMock.warn).toHaveBeenCalledWith(
-                'Test warning',
-                undefined,
-            );
+            expect(nestLoggerMock.warn).toHaveBeenCalledWith('Test warning');
         });
 
         it('should log warning with context', () => {
@@ -176,10 +173,7 @@ describe('MCPLogger', () => {
         it('should log info when level is INFO or higher', () => {
             logger.setLogLevel(LogLevel.INFO);
             logger.log('Test info');
-            expect(nestLoggerMock.log).toHaveBeenCalledWith(
-                'Test info',
-                undefined,
-            );
+            expect(nestLoggerMock.log).toHaveBeenCalledWith('Test info');
         });
 
         it('should log info with context', () => {
@@ -202,10 +196,7 @@ describe('MCPLogger', () => {
         it('should log debug when level is DEBUG or higher', () => {
             logger.setLogLevel(LogLevel.DEBUG);
             logger.debug('Test debug');
-            expect(nestLoggerMock.debug).toHaveBeenCalledWith(
-                'Test debug',
-                undefined,
-            );
+            expect(nestLoggerMock.debug).toHaveBeenCalledWith('Test debug');
         });
 
         it('should log debug with context', () => {
@@ -228,10 +219,7 @@ describe('MCPLogger', () => {
         it('should log verbose when level is VERBOSE', () => {
             logger.setLogLevel(LogLevel.VERBOSE);
             logger.verbose('Test verbose');
-            expect(nestLoggerMock.verbose).toHaveBeenCalledWith(
-                'Test verbose',
-                undefined,
-            );
+            expect(nestLoggerMock.verbose).toHaveBeenCalledWith('Test verbose');
         });
 
         it('should log verbose with context', () => {

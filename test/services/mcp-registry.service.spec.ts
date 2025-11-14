@@ -90,7 +90,6 @@ describe('MCPRegistryService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 "Tool 'test-tool' is already registered. Overwriting.",
-                undefined,
             );
         });
 
@@ -245,7 +244,6 @@ describe('MCPRegistryService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 "Resource 'file:///test.txt' is already registered. Overwriting.",
-                undefined,
             );
         });
 
@@ -424,7 +422,6 @@ describe('MCPRegistryService', () => {
 
             expect(Logger.prototype.warn).toHaveBeenCalledWith(
                 "Prompt 'test-prompt' is already registered. Overwriting.",
-                undefined,
             );
         });
 
@@ -554,7 +551,6 @@ describe('MCPRegistryService', () => {
             expect(service.getAllPrompts()).toHaveLength(0);
             expect(Logger.prototype.log).toHaveBeenCalledWith(
                 'Cleared all registrations',
-                undefined,
             );
         });
     });

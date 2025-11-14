@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MCPDiscoveryService } from '../../src/services/mcp-discovery.service';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
+import { MCP_MODULE_OPTIONS } from '../../src/constants';
 
 describe('MCPDiscoveryService - deprecation message branches', () => {
     let service: MCPDiscoveryService;
@@ -38,6 +39,12 @@ describe('MCPDiscoveryService - deprecation message branches', () => {
                 {
                     provide: Reflector,
                     useValue: { get: jest.fn() } as ReflectorValue,
+                },
+                {
+                    provide: MCP_MODULE_OPTIONS,
+                    useValue: {
+                        enableLogging: false,
+                    },
                 },
             ],
         }).compile();

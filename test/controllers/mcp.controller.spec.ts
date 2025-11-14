@@ -379,13 +379,78 @@ describe('MCPController', () => {
 
             controller.getPlayground(mockRes);
 
-            expect(Logger.prototype.error).toHaveBeenCalledWith(
-                'Failed to load playground.html',
-                expect.any(Error),
-            );
+            expect(Logger.prototype.error).toHaveBeenCalled();
+            const errorCall = (Logger.prototype.error as jest.Mock).mock
+                .calls[0];
+            expect(errorCall[0]).toBe('Failed to load playground.html');
+            expect(errorCall[1]).toContain('Error: File not found');
             expect(mockRes.status).toHaveBeenCalledWith(500);
             expect(mockRes.send).toHaveBeenCalledWith(
                 'Playground UI not available',
+            );
+        });
+    });
+
+    describe('with logging enabled', () => {
+        beforeEach(async () => {
+            const moduleWithLogging: TestingModule =
+                await Test.createTestingModule({
+                    controllers: [MCPController],
+                    providers: [
+                        MCPService,
+                        MCPRegistryService,
+                        MCPExecutionService,
+                        {
+                            provide: MCP_MODULE_OPTIONS,
+                            useValue: {
+                                ...mockOptions,
+                                enableLogging: true,
+                            },
+                        },
+                        {
+                            provide: ModuleRef,
+                            useValue: {
+                                get: jest.fn(),
+                            },
+                        },
+                    ],
+                }).compile();
+
+            controller = moduleWithLogging.get<MCPController>(MCPController);
+            jest.clearAllMocks();
+        });
+
+        it('should log requests and responses when logging is enabled', async () => {
+            const request: MCPRequest = {
+                jsonrpc: '2.0',
+                id: 1,
+                method: MCPMethod.PING,
+            };
+
+            await controller.handleRequest(request);
+
+            expect(Logger.prototype.debug).toHaveBeenCalledWith(
+                expect.stringContaining('Received request:'),
+            );
+            expect(Logger.prototype.debug).toHaveBeenCalledWith(
+                expect.stringContaining('Sending response:'),
+            );
+        });
+
+        it('should log batch requests when logging is enabled', async () => {
+            const requests: MCPRequest[] = [
+                { jsonrpc: '2.0', id: 1, method: MCPMethod.PING },
+                { jsonrpc: '2.0', id: 2, method: MCPMethod.PING },
+            ];
+
+            await controller.handleBatchRequest(requests);
+
+            expect(Logger.prototype.debug).toHaveBeenCalledWith(
+                expect.stringContaining('Received batch request'),
+            );
+            // The controller logs each individual request as it processes them
+            expect(Logger.prototype.debug).toHaveBeenCalledWith(
+                expect.stringContaining('Handling request:'),
             );
         });
     });

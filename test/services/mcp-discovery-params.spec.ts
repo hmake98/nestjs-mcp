@@ -7,6 +7,7 @@ import { MCPTool } from '../../src/decorators';
 import {
     MCP_TOOL_METADATA,
     MCP_TOOL_PARAM_METADATA,
+    MCP_MODULE_OPTIONS,
 } from '../../src/constants';
 
 @Injectable()
@@ -56,6 +57,12 @@ describe('MCPDiscoveryService - Parameter Extraction', () => {
                     provide: Reflector,
                     useValue: {
                         get: jest.fn(),
+                    },
+                },
+                {
+                    provide: MCP_MODULE_OPTIONS,
+                    useValue: {
+                        enableLogging: false,
                     },
                 },
             ],

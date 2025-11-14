@@ -115,8 +115,8 @@ describe('introspectServer', () => {
 
         expect(result).toEqual({
             tools: [
-                { name: 'tool1', description: 'Tool 1' },
-                { name: 'tool2', description: 'Tool 2' },
+                { name: 'tool1', description: 'Tool 1', parameters: [] },
+                { name: 'tool2', description: 'Tool 2', parameters: [] },
             ],
             resources: [{ name: 'resource1', uri: 'resource://1' }],
             prompts: [{ name: 'prompt1', description: 'Prompt 1' }],
@@ -316,5 +316,65 @@ describe('introspectServer', () => {
                 'Content-Type': 'application/json',
             },
         });
+    });
+
+    it('should handle tools with no inputSchema', async () => {
+        mockAxiosInstance.post
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        serverInfo: {
+                            name: 'Test Server',
+                            version: '1.0.0',
+                        },
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        tools: [
+                            {
+                                name: 'tool-no-schema',
+                                description: 'Tool without schema',
+                                inputSchema: null,
+                            },
+                            {
+                                name: 'tool-invalid-schema',
+                                description: 'Tool with invalid schema',
+                                inputSchema: 'invalid',
+                            },
+                            {
+                                name: 'tool-no-properties',
+                                description: 'Tool without properties',
+                                inputSchema: { type: 'object' },
+                            },
+                        ],
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { resources: [] } },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { prompts: [] } },
+            });
+
+        const result = await introspectServer('http://localhost:3000/mcp');
+
+        expect(result.tools).toHaveLength(3);
+        expect(result.tools[0].parameters).toEqual([]);
+        expect(result.tools[1].parameters).toEqual([]);
+        expect(result.tools[2].parameters).toEqual([]);
+    });
+
+    it('should handle API errors gracefully', async () => {
+        mockAxiosInstance.post.mockRejectedValueOnce(
+            new Error('Network error'),
+        );
+
+        await expect(
+            introspectServer('http://localhost:3000/mcp'),
+        ).rejects.toThrow('Network error');
     });
 });
