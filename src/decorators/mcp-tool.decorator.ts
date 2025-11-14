@@ -29,9 +29,7 @@ export function MCPTool(metadata: MCPToolMetadata): MethodDecorator {
  * Decorator to define parameters for an MCP tool
  * @param parameters Array of tool parameters
  */
-export function MCPToolParams(
-    parameters: Omit<MCPToolParameter, 'name'>[],
-): MethodDecorator {
+export function MCPToolParams(parameters: MCPToolParameter[]): MethodDecorator {
     return (
         target: object,
         propertyKey: string | symbol,

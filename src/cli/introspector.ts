@@ -41,7 +41,15 @@ export async function introspectServer(
         method: 'tools/list',
     });
 
-    const tools = toolsResponse.data.result?.tools || [];
+    const rawTools = toolsResponse.data.result?.tools || [];
+
+    // Convert inputSchema to parameters array
+    const tools = rawTools.map(
+        (tool: { inputSchema?: unknown; [key: string]: unknown }) => ({
+            ...tool,
+            parameters: convertSchemaToParameters(tool.inputSchema),
+        }),
+    );
 
     // Fetch resources
     const resourcesResponse = await client.post('', {
@@ -67,4 +75,39 @@ export async function introspectServer(
         prompts,
         serverInfo,
     };
+}
+
+/**
+ * Convert JSON Schema inputSchema to parameters array
+ */
+function convertSchemaToParameters(inputSchema: unknown): unknown[] {
+    if (
+        !inputSchema ||
+        typeof inputSchema !== 'object' ||
+        !('properties' in inputSchema)
+    ) {
+        return [];
+    }
+
+    const schema = inputSchema as {
+        properties: Record<string, unknown>;
+        required?: string[];
+    };
+    const properties = schema.properties;
+    const required = schema.required || [];
+
+    return Object.entries(properties).map(([name, propSchema]) => {
+        const schemaObj = propSchema as {
+            type?: string;
+            description?: string;
+            enum?: unknown[];
+        };
+        return {
+            name,
+            type: schemaObj.type || 'string',
+            description: schemaObj.description,
+            required: required.includes(name),
+            enum: schemaObj.enum,
+        };
+    });
 }

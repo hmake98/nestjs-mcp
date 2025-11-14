@@ -1,4 +1,4 @@
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable, Optional, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import {
     MCPGuard,
@@ -16,7 +16,7 @@ import {
  */
 @Injectable()
 export class MCPExecutionService {
-    constructor(private readonly moduleRef: ModuleRef) {}
+    constructor(@Optional() private readonly moduleRef?: ModuleRef) {}
 
     /**
      * Execute guards before handler
@@ -107,6 +107,18 @@ export class MCPExecutionService {
      * Resolve guard instance from module container
      */
     private async resolveGuard(GuardType: Type<MCPGuard>): Promise<MCPGuard> {
+        if (!this.moduleRef) {
+            // Fallback: create instance directly if moduleRef is not available
+            try {
+                return new GuardType();
+            } catch {
+                throw new MCPException(
+                    -32603,
+                    `Failed to resolve guard: ${GuardType.name}. ModuleRef not available.`,
+                );
+            }
+        }
+
         try {
             return await this.moduleRef.create(GuardType);
         } catch {
@@ -128,6 +140,18 @@ export class MCPExecutionService {
     private async resolveInterceptor(
         InterceptorType: Type<MCPInterceptor>,
     ): Promise<MCPInterceptor> {
+        if (!this.moduleRef) {
+            // Fallback: create instance directly if moduleRef is not available
+            try {
+                return new InterceptorType();
+            } catch {
+                throw new MCPException(
+                    -32603,
+                    `Failed to resolve interceptor: ${InterceptorType.name}. ModuleRef not available.`,
+                );
+            }
+        }
+
         try {
             return await this.moduleRef.create(InterceptorType);
         } catch {

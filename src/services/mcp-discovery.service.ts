@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import {
@@ -8,14 +8,16 @@ import {
     MCP_TOOL_PARAM_METADATA,
     MCP_GUARDS_METADATA,
     MCP_INTERCEPTORS_METADATA,
+    MCP_MODULE_OPTIONS,
 } from '../constants';
 import {
     MCPToolDefinition,
     MCPToolParameter,
     DiscoveredMCPResource,
     DiscoveredMCPPrompt,
+    MCPModuleOptions,
 } from '../interfaces';
-import { zodSchemaToMCPParameters } from '../utils';
+import { zodSchemaToMCPParameters, MCPLogger, LogLevel } from '../utils';
 
 /**
  * Service responsible for discovering MCP tools, resources, and prompts
@@ -23,11 +25,21 @@ import { zodSchemaToMCPParameters } from '../utils';
  */
 @Injectable()
 export class MCPDiscoveryService {
+    private readonly logger: MCPLogger;
+
     constructor(
         private readonly discoveryService: DiscoveryService,
         private readonly metadataScanner: MetadataScanner,
         private readonly reflector: Reflector,
-    ) {}
+        @Inject(MCP_MODULE_OPTIONS)
+        private readonly options: MCPModuleOptions,
+    ) {
+        // Initialize logger with configured log level
+        const logLevel =
+            this.options.logLevel ??
+            (this.options.enableLogging ? LogLevel.DEBUG : LogLevel.INFO);
+        this.logger = new MCPLogger(MCPDiscoveryService.name, logLevel);
+    }
 
     /**
      * Discover all MCP tools from providers
@@ -35,6 +47,8 @@ export class MCPDiscoveryService {
     discoverTools(): MCPToolDefinition[] {
         const tools: MCPToolDefinition[] = [];
         const providers = this.discoveryService.getProviders();
+
+        this.logger.debug(`Found ${providers.length} total providers to scan`);
 
         providers.forEach((wrapper: InstanceWrapper) => {
             const { instance } = wrapper;
@@ -47,36 +61,54 @@ export class MCPDiscoveryService {
                 this.metadataScanner.getAllMethodNames(prototype);
 
             methodNames.forEach((methodName) => {
+                // Read metadata from the prototype method, not the instance method
                 const toolMetadata = this.reflector.get(
                     MCP_TOOL_METADATA,
-                    instance[methodName],
+                    prototype[methodName],
                 );
 
                 if (toolMetadata) {
+                    this.logger.debug(
+                        `Found tool: ${toolMetadata.name} on ${instance.constructor.name}.${methodName}`,
+                    );
+
                     const paramMetadata =
                         this.reflector.get(
                             MCP_TOOL_PARAM_METADATA,
-                            instance[methodName],
+                            prototype[methodName],
                         ) || [];
 
                     const guards =
                         this.reflector.get(
                             MCP_GUARDS_METADATA,
-                            instance[methodName],
+                            prototype[methodName],
                         ) || [];
 
                     const interceptors =
                         this.reflector.get(
                             MCP_INTERCEPTORS_METADATA,
-                            instance[methodName],
+                            prototype[methodName],
                         ) || [];
 
                     const method = instance[methodName].bind(instance);
 
-                    // If schema is provided, use it to generate parameters
-                    const parameters = toolMetadata.schema
-                        ? zodSchemaToMCPParameters(toolMetadata.schema)
-                        : this.extractParameters(method, paramMetadata);
+                    // Determine parameters from schema, explicit metadata, or function signature
+                    let parameters: MCPToolParameter[];
+                    if (toolMetadata.schema) {
+                        // Use Zod schema if provided
+                        parameters = zodSchemaToMCPParameters(
+                            toolMetadata.schema,
+                        );
+                    } else if (
+                        paramMetadata.length > 0 &&
+                        paramMetadata[0]?.name
+                    ) {
+                        // Use explicit parameter definitions with names
+                        parameters = paramMetadata as MCPToolParameter[];
+                    } else {
+                        // Fallback: try to extract from function signature (will return empty for single 'params' object)
+                        parameters = [];
+                    }
 
                     tools.push({
                         name: toolMetadata.name,
@@ -121,22 +153,23 @@ export class MCPDiscoveryService {
                 this.metadataScanner.getAllMethodNames(prototype);
 
             methodNames.forEach((methodName) => {
+                // Read metadata from the prototype method, not the instance method
                 const resourceMetadata = this.reflector.get(
                     MCP_RESOURCE_METADATA,
-                    instance[methodName],
+                    prototype[methodName],
                 );
 
                 if (resourceMetadata) {
                     const guards =
                         this.reflector.get(
                             MCP_GUARDS_METADATA,
-                            instance[methodName],
+                            prototype[methodName],
                         ) || [];
 
                     const interceptors =
                         this.reflector.get(
                             MCP_INTERCEPTORS_METADATA,
-                            instance[methodName],
+                            prototype[methodName],
                         ) || [];
 
                     const method = instance[methodName].bind(instance);
@@ -181,22 +214,23 @@ export class MCPDiscoveryService {
                 this.metadataScanner.getAllMethodNames(prototype);
 
             methodNames.forEach((methodName) => {
+                // Read metadata from the prototype method, not the instance method
                 const promptMetadata = this.reflector.get(
                     MCP_PROMPT_METADATA,
-                    instance[methodName],
+                    prototype[methodName],
                 );
 
                 if (promptMetadata) {
                     const guards =
                         this.reflector.get(
                             MCP_GUARDS_METADATA,
-                            instance[methodName],
+                            prototype[methodName],
                         ) || [];
 
                     const interceptors =
                         this.reflector.get(
                             MCP_INTERCEPTORS_METADATA,
-                            instance[methodName],
+                            prototype[methodName],
                         ) || [];
 
                     const method = instance[methodName].bind(instance);

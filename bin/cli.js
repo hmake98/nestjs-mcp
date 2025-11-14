@@ -29,9 +29,9 @@ program
     .option(
         '--out <directory>',
         'Output directory for generated client',
-        './mcp-client',
+        './mcp',
     )
-    .option('--name <name>', 'Client package name', 'mcp-client')
+    .option('--name <name>', 'Client package name', 'mcp')
     .action(async (options) => {
         try {
             console.log('🔍 Introspecting MCP server at:', options.url);

@@ -53,10 +53,10 @@ export interface MCPToolMetadata {
  */
 export interface MCPToolWithParamsMetadata extends MCPToolMetadata {
     /**
-     * Manual parameter definitions (legacy approach)
+     * Manual parameter definitions
      * Use 'schema' instead for Zod-based validation
      */
-    parameters?: Omit<MCPToolParameter, 'name'>[];
+    parameters?: MCPToolParameter[];
     /**
      * Zod schema for validating tool input parameters
      * Preferred over 'parameters' for type-safe validation

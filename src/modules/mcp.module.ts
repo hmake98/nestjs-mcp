@@ -1,11 +1,12 @@
 import {
     DynamicModule,
+    Global,
     Module,
-    OnModuleInit,
+    OnApplicationBootstrap,
     Inject,
     Provider,
 } from '@nestjs/common';
-import { DiscoveryModule } from '@nestjs/core';
+import { DiscoveryModule, Reflector } from '@nestjs/core';
 import {
     MCPModuleOptions,
     MCPModuleAsyncOptions,
@@ -25,9 +26,11 @@ import { MCPLogger, LogLevel } from '../utils';
 /**
  * Main MCP Module for NestJS integration
  */
+@Global()
 @Module({})
-export class MCPModule implements OnModuleInit {
+export class MCPModule implements OnApplicationBootstrap {
     private readonly logger: MCPLogger;
+    private discoveryComplete = false;
 
     constructor(
         @Inject(MCP_MODULE_OPTIONS)
@@ -43,10 +46,42 @@ export class MCPModule implements OnModuleInit {
     }
 
     /**
+     * Perform discovery - can be called multiple times safely
+     */
+    private performDiscovery(): void {
+        if (this.discoveryComplete) {
+            return;
+        }
+
+        this.logger.log('Initializing MCP Module...');
+
+        // Discover and register tools
+        const tools = this.discoveryService.discoverTools();
+        this.registryService.registerTools(tools);
+        this.logger.log(`Discovered and registered ${tools.length} tools`);
+
+        // Discover and register resources
+        const resources = this.discoveryService.discoverResources();
+        this.registryService.registerResources(resources);
+        this.logger.log(
+            `Discovered and registered ${resources.length} resources`,
+        );
+
+        // Discover and register prompts
+        const prompts = this.discoveryService.discoverPrompts();
+        this.registryService.registerPrompts(prompts);
+        this.logger.log(`Discovered and registered ${prompts.length} prompts`);
+
+        this.logger.log('MCP Module initialized successfully');
+        this.discoveryComplete = true;
+    }
+
+    /**
      * Register the MCP module with synchronous options
      */
     static forRoot(options: MCPModuleOptions): DynamicModule {
         return {
+            global: true,
             module: MCPModule,
             imports: [DiscoveryModule],
             controllers: [MCPController],
@@ -55,6 +90,7 @@ export class MCPModule implements OnModuleInit {
                     provide: MCP_MODULE_OPTIONS,
                     useValue: options,
                 },
+                Reflector,
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
@@ -76,11 +112,13 @@ export class MCPModule implements OnModuleInit {
      */
     static forRootAsync(options: MCPModuleAsyncOptions): DynamicModule {
         return {
+            global: true,
             module: MCPModule,
             imports: [DiscoveryModule, ...(options.imports || [])],
             controllers: [MCPController],
             providers: [
                 ...this.createAsyncProviders(options),
+                Reflector,
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
@@ -106,6 +144,7 @@ export class MCPModule implements OnModuleInit {
             module: MCPModule,
             imports: [DiscoveryModule],
             providers: [
+                Reflector,
                 MCPRegistryService,
                 MCPDiscoveryService,
                 MCPSDKService,
@@ -124,28 +163,12 @@ export class MCPModule implements OnModuleInit {
 
     /**
      * Initialize module and discover tools, resources, and prompts
+     * This runs after all modules have been initialized
      */
-    async onModuleInit() {
-        this.logger.log('Initializing MCP Module...');
-
-        // Discover and register tools
-        const tools = this.discoveryService.discoverTools();
-        this.registryService.registerTools(tools);
-        this.logger.log(`Discovered and registered ${tools.length} tools`);
-
-        // Discover and register resources
-        const resources = this.discoveryService.discoverResources();
-        this.registryService.registerResources(resources);
-        this.logger.log(
-            `Discovered and registered ${resources.length} resources`,
-        );
-
-        // Discover and register prompts
-        const prompts = this.discoveryService.discoverPrompts();
-        this.registryService.registerPrompts(prompts);
-        this.logger.log(`Discovered and registered ${prompts.length} prompts`);
-
-        this.logger.log('MCP Module initialized successfully');
+    async onApplicationBootstrap() {
+        // Add a small delay to ensure all providers are fully initialized
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        this.performDiscovery();
     }
 
     /**

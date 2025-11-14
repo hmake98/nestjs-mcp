@@ -73,7 +73,11 @@ export class MCPLogger {
      */
     warn(message: string, context?: string): void {
         if (this.isLevelEnabled(LogLevel.WARN)) {
-            this.nestLogger.warn(message, context);
+            if (context) {
+                this.nestLogger.warn(message, context);
+            } else {
+                this.nestLogger.warn(message);
+            }
         }
     }
 
@@ -82,7 +86,11 @@ export class MCPLogger {
      */
     log(message: string, context?: string): void {
         if (this.isLevelEnabled(LogLevel.INFO)) {
-            this.nestLogger.log(message, context);
+            if (context) {
+                this.nestLogger.log(message, context);
+            } else {
+                this.nestLogger.log(message);
+            }
         }
     }
 
@@ -91,7 +99,11 @@ export class MCPLogger {
      */
     debug(message: string, context?: string): void {
         if (this.isLevelEnabled(LogLevel.DEBUG)) {
-            this.nestLogger.debug(message, context);
+            if (context) {
+                this.nestLogger.debug(message, context);
+            } else {
+                this.nestLogger.debug(message);
+            }
         }
     }
 
@@ -100,7 +112,11 @@ export class MCPLogger {
      */
     verbose(message: string, context?: string): void {
         if (this.isLevelEnabled(LogLevel.VERBOSE)) {
-            this.nestLogger.verbose(message, context);
+            if (context) {
+                this.nestLogger.verbose(message, context);
+            } else {
+                this.nestLogger.verbose(message);
+            }
         }
     }
 }

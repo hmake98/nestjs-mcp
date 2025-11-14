@@ -4,7 +4,6 @@ import {
     Body,
     HttpCode,
     HttpStatus,
-    Logger,
     Inject,
     Get,
     Res,
@@ -15,19 +14,26 @@ import { join } from 'node:path';
 import { MCPService } from '../services';
 import { MCPRequest, MCPResponse, MCPModuleOptions } from '../interfaces';
 import { MCP_MODULE_OPTIONS } from '../constants';
+import { MCPLogger, LogLevel } from '../utils';
 
 /**
  * Controller for handling MCP protocol requests via HTTP
  */
 @Controller('mcp')
 export class MCPController {
-    private readonly logger = new Logger(MCPController.name);
+    private readonly logger: MCPLogger;
 
     constructor(
         private readonly mcpService: MCPService,
         @Inject(MCP_MODULE_OPTIONS)
         private readonly options: MCPModuleOptions,
-    ) {}
+    ) {
+        // Initialize logger with configured log level
+        const logLevel =
+            this.options.logLevel ??
+            (this.options.enableLogging ? LogLevel.DEBUG : LogLevel.INFO);
+        this.logger = new MCPLogger(MCPController.name, logLevel);
+    }
 
     /**
      * Handle MCP JSON-RPC requests
@@ -80,11 +86,11 @@ export class MCPController {
         }
 
         try {
-            // Resolve from project root to src/views/playground.html
+            // Resolve relative to this file's location
+            // In dist: dist/controllers/mcp.controller.js -> dist/views/playground.html
             const playgroundPath = join(
-                /* eslint-disable-next-line no-undef */
-                process.cwd(),
-                'src',
+                __dirname,
+                '..',
                 'views',
                 'playground.html',
             );
