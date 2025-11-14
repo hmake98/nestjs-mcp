@@ -9,6 +9,7 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 - [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Example Repository](#example-repository)
 - [MCP Playground](#mcp-playground)
 - [Type-Safe Client Generator](#type-safe-client-generator)
 - [Guards & Interceptors](#guards--interceptors)
@@ -330,6 +331,20 @@ export class PromptService {
     }
 }
 ```
+
+## Example Repository
+
+**Want to see a complete working example?**
+
+Check out the [nestjs-mcp-example](https://github.com/hmake98/nestjs-mcp-example) repository, which demonstrates all the features of this library in a real NestJS application:
+
+- ✅ Complete setup with all decorators (`@MCPTool`, `@MCPResource`, `@MCPPrompt`)
+- ✅ Guards and interceptors configuration
+- ✅ Multiple transport protocols (HTTP, WebSocket, SSE, Redis, gRPC)
+- ✅ Real-world use cases and best practices
+- ✅ Type-safe client generation examples
+
+Visit the repo to clone and run it locally: [github.com/hmake98/nestjs-mcp-example](https://github.com/hmake98/nestjs-mcp-example)
 
 ## MCP Playground
 
