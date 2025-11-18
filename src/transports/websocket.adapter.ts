@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { WebSocketServer, WebSocket, RawData } from 'ws';
 import { IncomingMessage } from 'http';
 import { BaseMCPTransportAdapter } from './base-transport.adapter';
 import {
@@ -10,13 +9,25 @@ import {
 } from '../interfaces';
 import { MCPService } from '../services/mcp.service';
 
+// Type-only imports (don't require the package to be installed)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WebSocketServer = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WebSocket = any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RawData = any;
+
 /**
  * WebSocket transport adapter for MCP protocol
  * Handles JSON-RPC communication over WebSocket connections
+ *
+ * @requires ws - Install with: npm install ws @types/ws
  */
 @Injectable()
 export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
     private wss: WebSocketServer | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private ws: any = null;
     private readonly wsOptions: Required<
         Pick<MCPWebSocketOptions, 'port' | 'host' | 'path'>
     > &
@@ -35,6 +46,23 @@ export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
     }
 
     /**
+     * Lazy load WebSocket dependency
+     */
+    private async loadWsDependency(): Promise<void> {
+        if (this.ws) {
+            return; // Already loaded
+        }
+
+        try {
+            this.ws = await import('ws');
+        } catch {
+            throw new Error(
+                'ws dependency not found. Please install it with: npm install ws',
+            );
+        }
+    }
+
+    /**
      * Start the WebSocket server
      */
     async start(): Promise<void> {
@@ -43,7 +71,10 @@ export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
             return;
         }
 
-        this.wss = new WebSocketServer({
+        // Load dependency first
+        await this.loadWsDependency();
+
+        this.wss = new this.ws.WebSocketServer({
             host: this.wsOptions.host,
             port: this.wsOptions.port,
             path: this.wsOptions.path,
@@ -72,8 +103,10 @@ export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
             // Close all client connections
             this.clients.forEach((ws: unknown) => {
                 if (
-                    ws instanceof WebSocket &&
-                    (ws as WebSocket).readyState === WebSocket.OPEN
+                    ws &&
+                    typeof ws === 'object' &&
+                    'readyState' in ws &&
+                    ws.readyState === this.ws.WebSocket.OPEN
                 ) {
                     (ws as WebSocket).close(1000, 'Server shutting down');
                 }
@@ -100,7 +133,7 @@ export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
     async send(clientId: string, response: MCPResponse): Promise<void> {
         const ws = this.clients.get(clientId) as WebSocket | undefined;
 
-        if (!ws || ws.readyState !== WebSocket.OPEN) {
+        if (!ws || ws.readyState !== this.ws.WebSocket.OPEN) {
             this.logger.warn(`Cannot send to ${clientId}: not connected`);
             return;
         }
@@ -124,8 +157,10 @@ export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
 
         this.clients.forEach((ws: unknown, clientId: string) => {
             if (
-                ws instanceof WebSocket &&
-                (ws as WebSocket).readyState === WebSocket.OPEN
+                ws &&
+                typeof ws === 'object' &&
+                'readyState' in ws &&
+                ws.readyState === this.ws.WebSocket.OPEN
             ) {
                 sendPromises.push(
                     new Promise((resolve, reject) => {
@@ -162,7 +197,7 @@ export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
             });
             setTimeout(() => {
                 if (
-                    ws.readyState === WebSocket.OPEN &&
+                    ws.readyState === this.ws.WebSocket.OPEN &&
                     !this.clients.has(clientId)
                 ) {
                     ws.close(1000, 'Connection timeout');
@@ -208,7 +243,7 @@ export class MCPWebSocketAdapter extends BaseMCPTransportAdapter {
 
             // Send error response if possible
             const ws = this.clients.get(clientId) as WebSocket | undefined;
-            if (ws && ws.readyState === WebSocket.OPEN) {
+            if (ws && ws.readyState === this.ws.WebSocket.OPEN) {
                 const errorResponse: MCPResponse = {
                     jsonrpc: '2.0',
                     id: null as unknown as string | number,

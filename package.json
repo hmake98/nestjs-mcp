@@ -65,6 +65,20 @@
         "reflect-metadata": "^0.1.13",
         "rxjs": "^7.8.0"
     },
+    "peerDependenciesMeta": {
+        "@grpc/grpc-js": {
+            "optional": true
+        },
+        "@grpc/proto-loader": {
+            "optional": true
+        },
+        "ioredis": {
+            "optional": true
+        },
+        "ws": {
+            "optional": true
+        }
+    },
     "devDependencies": {
         "@commitlint/cli": "^19.5.0",
         "@commitlint/config-conventional": "^19.5.0",

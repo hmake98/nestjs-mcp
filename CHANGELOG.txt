@@ -1,1 +1,21 @@
+# Changelog
+
+## [Unreleased]
+
+### Changed
+- **Breaking Change**: Transport dependencies are now optional peer dependencies
+  - `@grpc/grpc-js`, `@grpc/proto-loader`, `ioredis`, and `ws` are no longer automatically installed
+  - Install only the transport packages you need (see README for details)
+  - HTTP transport works out-of-the-box with no additional dependencies
+  - Improved error messages guide users to install missing dependencies when needed
+  - Significantly reduced installation size for users who don't need all transports
+
+### Technical Details
+- Refactored transport adapters to use dynamic imports (lazy loading)
+- Dependencies are loaded only when the corresponding transport is actually used
+- Added helpful error messages when transport dependencies are missing
+
+## [1.0.1] - Initial Release
+
 First release of nestjs-mcp
+

@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as grpc from '@grpc/grpc-js';
-import * as protoLoader from '@grpc/proto-loader';
 import { join } from 'path';
 import { Buffer } from 'buffer';
 import { BaseMCPTransportAdapter } from './base-transport.adapter';
@@ -11,19 +9,36 @@ import {
 } from '../interfaces';
 import { MCPService } from '../services/mcp.service';
 
+// Type imports only (these don't require the package to be installed)
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type GrpcServer = any;
+type GrpcServerCredentials = any;
+type GrpcServerUnaryCall<_RequestType, _ResponseType> = any;
+type GrpcSendUnaryData<_ResponseType> = any;
+type GrpcServerDuplexStream<_RequestType, _ResponseType> = any;
+type GrpcServerWritableStream<_RequestType, _ResponseType> = any;
+type GrpcServiceClientConstructor = any;
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
 interface ProtoGrpcType {
     mcp: {
-        MCPService: grpc.ServiceClientConstructor;
+        MCPService: GrpcServiceClientConstructor;
     };
 }
 
 /**
  * gRPC transport adapter for MCP protocol
  * Provides high-performance RPC communication with bidirectional streaming
+ *
+ * @requires @grpc/grpc-js - Install with: npm install @grpc/grpc-js @grpc/proto-loader
  */
 @Injectable()
 export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
-    private server: grpc.Server | null = null;
+    private server: GrpcServer | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private grpc: any = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private protoLoader: any = null;
     private readonly grpcOptions: Required<
         Pick<
             MCPGrpcOptions,
@@ -46,6 +61,24 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
     }
 
     /**
+     * Lazy load gRPC dependencies
+     */
+    private async loadGrpcDependencies(): Promise<void> {
+        if (this.grpc && this.protoLoader) {
+            return; // Already loaded
+        }
+
+        try {
+            this.grpc = await import('@grpc/grpc-js');
+            this.protoLoader = await import('@grpc/proto-loader');
+        } catch {
+            throw new Error(
+                'gRPC dependencies not found. Please install them with: npm install @grpc/grpc-js @grpc/proto-loader',
+            );
+        }
+    }
+
+    /**
      * Start the gRPC server
      */
     async start(): Promise<void> {
@@ -54,8 +87,11 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
             return;
         }
 
+        // Load dependencies first
+        await this.loadGrpcDependencies();
+
         // Load proto file
-        const packageDefinition = protoLoader.loadSync(
+        const packageDefinition = this.protoLoader.loadSync(
             this.grpcOptions.protoPath,
             {
                 keepCase: true,
@@ -66,12 +102,12 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
             },
         );
 
-        const protoDescriptor = grpc.loadPackageDefinition(
+        const protoDescriptor = this.grpc.loadPackageDefinition(
             packageDefinition,
         ) as unknown as ProtoGrpcType;
 
         // Create server
-        this.server = new grpc.Server();
+        this.server = new this.grpc.Server();
 
         // Get service definition
         const serviceDefinition =
@@ -79,7 +115,7 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
                 this.grpcOptions.packageName as keyof ProtoGrpcType
             ];
         const mcpService = (
-            serviceDefinition as { MCPService: grpc.ServiceClientConstructor }
+            serviceDefinition as { MCPService: GrpcServiceClientConstructor }
         ).MCPService;
 
         // Add service implementation
@@ -135,7 +171,7 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
      */
     async send(clientId: string, response: MCPResponseType): Promise<void> {
         const stream = this.clients.get(clientId) as
-            | grpc.ServerWritableStream<unknown, unknown>
+            | GrpcServerWritableStream<unknown, unknown>
             | undefined;
 
         if (!stream) {
@@ -162,7 +198,7 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
 
         for (const clientId of clientIds) {
             const stream = this.clients.get(clientId) as
-                | grpc.ServerWritableStream<unknown, unknown>
+                | GrpcServerWritableStream<unknown, unknown>
                 | undefined;
             if (stream) {
                 try {
@@ -183,8 +219,8 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
      * Handle unary Call RPC
      */
     private async handleCall(
-        call: grpc.ServerUnaryCall<unknown, unknown>,
-        callback: grpc.sendUnaryData<unknown>,
+        call: GrpcServerUnaryCall<unknown, unknown>,
+        callback: GrpcSendUnaryData<unknown>,
     ): Promise<void> {
         try {
             const grpcRequest = call.request as {
@@ -203,7 +239,7 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
             callback(null, grpcResponse);
         } catch (error) {
             callback({
-                code: grpc.status.INTERNAL,
+                code: this.grpc.status.INTERNAL,
                 message: error instanceof Error ? error.message : String(error),
             });
         }
@@ -212,9 +248,7 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
     /**
      * Handle bidirectional Stream RPC
      */
-    private handleStream(
-        call: grpc.ServerDuplexStream<unknown, unknown>,
-    ): void {
+    private handleStream(call: GrpcServerDuplexStream<unknown, unknown>): void {
         const clientId = this.generateClientId();
         this.onClientConnect(clientId, call);
 
@@ -253,7 +287,7 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
      * Handle server streaming Subscribe RPC
      */
     private handleSubscribe(
-        call: grpc.ServerWritableStream<unknown, unknown>,
+        call: GrpcServerWritableStream<unknown, unknown>,
     ): void {
         const request = call.request as {
             client_id?: string;
@@ -348,9 +382,9 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
     /**
      * Get server credentials based on configuration
      */
-    private getServerCredentials(): grpc.ServerCredentials {
+    private getServerCredentials(): GrpcServerCredentials {
         if (this.grpcOptions.secure && this.grpcOptions.credentials) {
-            return grpc.ServerCredentials.createSsl(
+            return this.grpc.ServerCredentials.createSsl(
                 this.grpcOptions.credentials.rootCerts
                     ? Buffer.from(this.grpcOptions.credentials.rootCerts)
                     : null,
@@ -368,6 +402,6 @@ export class MCPGrpcAdapter extends BaseMCPTransportAdapter {
             );
         }
 
-        return grpc.ServerCredentials.createInsecure();
+        return this.grpc.ServerCredentials.createInsecure();
     }
 }

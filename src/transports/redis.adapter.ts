@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import Redis from 'ioredis';
 import { BaseMCPTransportAdapter } from './base-transport.adapter';
 import {
     MCPRedisOptions,
@@ -8,14 +7,22 @@ import {
 } from '../interfaces';
 import { MCPService } from '../services/mcp.service';
 
+// Type-only import (doesn't require the package to be installed)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type RedisClient = any;
+
 /**
  * Redis transport adapter for MCP protocol
  * Enables pub/sub communication for multi-process and distributed deployments
+ *
+ * @requires ioredis - Install with: npm install ioredis
  */
 @Injectable()
 export class MCPRedisAdapter extends BaseMCPTransportAdapter {
-    private publishClient: Redis | null = null;
-    private subscribeClient: Redis | null = null;
+    private publishClient: RedisClient | null = null;
+    private subscribeClient: RedisClient | null = null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private Redis: any = null;
     private readonly redisOptions: Required<
         Pick<
             MCPRedisOptions,
@@ -41,6 +48,24 @@ export class MCPRedisAdapter extends BaseMCPTransportAdapter {
     }
 
     /**
+     * Lazy load Redis dependency
+     */
+    private async loadRedisDependency(): Promise<void> {
+        if (this.Redis) {
+            return; // Already loaded
+        }
+
+        try {
+            const ioredis = await import('ioredis');
+            this.Redis = ioredis.default;
+        } catch {
+            throw new Error(
+                'ioredis dependency not found. Please install it with: npm install ioredis',
+            );
+        }
+    }
+
+    /**
      * Start the Redis transport
      */
     async start(): Promise<void> {
@@ -48,6 +73,9 @@ export class MCPRedisAdapter extends BaseMCPTransportAdapter {
             this.logger.warn('Redis transport already running');
             return;
         }
+
+        // Load dependency first
+        await this.loadRedisDependency();
 
         const redisConfig = {
             host: this.redisOptions.host,
@@ -58,8 +86,8 @@ export class MCPRedisAdapter extends BaseMCPTransportAdapter {
         };
 
         // Create separate clients for pub/sub
-        this.publishClient = new Redis(redisConfig);
-        this.subscribeClient = new Redis(redisConfig);
+        this.publishClient = new this.Redis(redisConfig);
+        this.subscribeClient = new this.Redis(redisConfig);
 
         // Handle Redis errors
         this.publishClient.on('error', (err: Error) =>
