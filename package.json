@@ -1,6 +1,6 @@
 {
     "name": "@hmake98/nestjs-mcp",
-    "version": "1.0.2",
+    "version": "1.0.1",
     "description": "NestJS package for integrating MCP (Model Context Protocol) servers",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
