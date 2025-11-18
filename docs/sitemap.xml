@@ -2,554 +2,554 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/index.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/hierarchy.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/constants.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/constants_mcp.constants.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_MODULE_OPTIONS.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_TOOL_METADATA.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_RESOURCE_METADATA.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_PROMPT_METADATA.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_TOOL_PARAM_METADATA.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_GUARDS_METADATA.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_INTERCEPTORS_METADATA.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/variables/constants_mcp.constants.MCP_PROTOCOL_VERSION.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/enums/constants_mcp.constants.MCPErrorCode.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/enums/constants_mcp.constants.MCPMethod.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/controllers.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/controllers_mcp.controller.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/controllers_mcp.controller.MCPController.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/decorators.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/decorators_mcp-guards.decorator.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-guards.decorator.UseMCPGuards.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/decorators_mcp-interceptors.decorator.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-interceptors.decorator.UseMCPInterceptors.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/decorators_mcp-prompt.decorator.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-prompt.decorator.MCPPrompt.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/decorators_mcp-resource.decorator.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-resource.decorator.MCPResource.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-resource.decorator.MCPResourceTemplate.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/decorators_mcp-tool.decorator.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-tool.decorator.MCPTool.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-tool.decorator.MCPToolParams.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/decorators_mcp-tool.decorator.MCPToolWithParams.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/guards_auth.guard.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/guards_auth.guard.AuthGuard.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/guards.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/guards_permission.guard.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/guards_permission.guard.PermissionGuard.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/guards_rate-limit.guard.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/guards_rate-limit.guard.RateLimitGuard.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interceptors_error-mapping.interceptor.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interceptors_error-mapping.interceptor.ErrorMappingInterceptor.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interceptors.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interceptors_logging.interceptor.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interceptors_logging.interceptor.LoggingInterceptor.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interceptors_timeout.interceptor.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interceptors_timeout.interceptor.TimeoutInterceptor.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-cli.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-cli.interface.GenerateClientOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-cli.interface.ServerIntrospection.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-execution.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/enums/interfaces_mcp-execution.interface.MCPContextType.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-execution.interface.MCPExecutionContext.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-execution.interface.MCPContext.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-execution.interface.MCPGuard.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-execution.interface.MCPInterceptor.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-execution.interface.MCPCallHandler.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/types/interfaces_mcp-execution.interface.MCPGuardType.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/types/interfaces_mcp-execution.interface.MCPInterceptorType.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interfaces_mcp-execution.interface.MCPException.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interfaces_mcp-execution.interface.MCPForbiddenException.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interfaces_mcp-execution.interface.MCPUnauthorizedException.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interfaces_mcp-execution.interface.MCPRateLimitException.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/interfaces_mcp-execution.interface.MCPTimeoutException.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-logger.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/enums/interfaces_mcp-logger.interface.LogLevel.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/types/interfaces_mcp-logger.interface.LogLevelName.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-options.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-options.interface.MCPModuleOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-options.interface.MCPOptionsFactory.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-options.interface.MCPModuleAsyncOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-prompt.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-prompt.interface.MCPPromptMetadata.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-protocol.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/types/interfaces_mcp-protocol.interface.JSONValue.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/types/interfaces_mcp-protocol.interface.JSONObject.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPRequest.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPResponse.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPError.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPNotification.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPToolParameter.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPToolDefinition.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPToolResult.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPResourceInfo.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPResourceContent.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPResourceTemplateInfo.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPPromptInfo.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPPromptMessage.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPServerCapabilities.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPServerInfo.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPClientInfo.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPInitializeRequest.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.MCPInitializeResponse.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.DiscoveredMCPResource.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-protocol.interface.DiscoveredMCPPrompt.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-resource.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-resource.interface.MCPResourceMetadata.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-resource.interface.MCPResourceTemplateMetadata.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-tool.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-tool.interface.DeprecationInfo.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-tool.interface.MCPToolMetadata.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-tool.interface.MCPToolWithParamsMetadata.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/interfaces_mcp-transport.interface.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-transport.interface.MCPTransportAdapter.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-transport.interface.MCPTransportOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-transport.interface.MCPWebSocketOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-transport.interface.MCPSseOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-transport.interface.MCPRedisOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-transport.interface.MCPGrpcOptions.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/enums/interfaces_mcp-transport.interface.MCPTransportType.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/interfaces/interfaces_mcp-transport.interface.MCPTransportConfig.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/modules.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/modules_mcp.module.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/modules_mcp.module.MCPModule.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/services.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/services_mcp-discovery.service.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/services_mcp-discovery.service.MCPDiscoveryService.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/services_mcp-execution.service.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/services_mcp-execution.service.MCPExecutionService.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/services_mcp-registry.service.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/services_mcp-registry.service.MCPRegistryService.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/services_mcp-sdk.service.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/services_mcp-sdk.service.MCPSDKService.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/services_mcp.service.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/services_mcp.service.MCPService.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/transports_base-transport.adapter.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/transports_base-transport.adapter.BaseMCPTransportAdapter.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/utils_execution-context.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/utils_execution-context.MCPContextImpl.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/utils_execution-context.MCPExecutionContextImpl.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/utils.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/utils_logger.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/classes/utils_logger.MCPLogger.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/modules/utils_zod-helpers.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/utils_zod-helpers.zodToJsonSchema.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/utils_zod-helpers.zodSchemaToMCPParameters.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/utils_zod-helpers.validateWithZod.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 	<url>
 		<loc>https://hmake98.github.io/nestjs-mcp/functions/utils_zod-helpers.safeValidateWithZod.html</loc>
-		<lastmod>2025-11-18T06:03:23.302Z</lastmod>
+		<lastmod>2025-11-18T06:12:15.101Z</lastmod>
 	</url>
 </urlset>

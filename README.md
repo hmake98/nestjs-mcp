@@ -32,6 +32,7 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 - 🧪 **Built-in Playground**: Interactive web UI at `/mcp/playground` for testing tools, resources, and prompts without curl
 - 🚀 **Client Generator**: CLI tool to generate 100% type-safe TypeScript clients from your running server
 - 🌐 **Multiple Transport Protocols**: HTTP, WebSocket, SSE, Redis Pub/Sub, gRPC, and stdio support
+- ⚡ **Lazy Loading**: Transport dependencies loaded on-demand - install only what you need
 - 📡 **Real-time Communication**: WebSocket and SSE for bidirectional and streaming data
 - 🔀 **Distributed Systems**: Redis adapter for multi-process clusters and horizontal scaling
 - ⚡ **High Performance**: gRPC support for microservices and high-throughput scenarios
@@ -67,14 +68,13 @@ This package requires the following peer dependencies:
 
 ### Optional Transport Dependencies
 
-Install additional packages based on the transports you want to use:
+**The library uses lazy loading for transport adapters** - dependencies are only loaded when you actually use a transport. This significantly reduces installation size and startup time.
+
+Install additional packages only for the transports you need:
 
 ```bash
 # WebSocket transport
-npm install ws @types/node
-
-# SSE transport
-npm install rxjs @types/express
+npm install ws
 
 # Redis transport
 npm install ioredis
@@ -83,7 +83,12 @@ npm install ioredis
 npm install @grpc/grpc-js @grpc/proto-loader
 ```
 
-> **Note**: HTTP and stdio transports are built-in and require no additional dependencies.
+> **Note**:
+>
+> - HTTP and stdio transports are built-in and require no additional dependencies
+> - SSE transport uses `rxjs`, which is already a peer dependency
+> - Transport dependencies are declared as optional peer dependencies
+> - If you try to use a transport without its dependencies, you'll get a helpful error message with installation instructions
 
 ## Quick Start
 
@@ -1242,6 +1247,17 @@ export class VersionedService {
 
 ## Transport Options
 
+### Lazy Loading Architecture
+
+**All transport adapters use lazy loading** - dependencies are dynamically imported only when a transport is first used. This provides several benefits:
+
+- 🚀 **Faster Startup**: No overhead from unused transports
+- 📦 **Smaller Bundle**: Install only what you need
+- 🔧 **Flexible**: Add/remove transports without touching dependencies
+- 💡 **Smart Errors**: Clear messages guide you to install missing packages
+
+When you enable a transport, the adapter automatically checks for and loads its dependencies. If a dependency is missing, you'll see a helpful error message with exact installation instructions.
+
 ### HTTP Transport (Default)
 
 Once configured, your NestJS application exposes JSON-RPC endpoints for MCP communication:
@@ -1320,8 +1336,9 @@ Real-time bidirectional communication using WebSockets. Perfect for:
 
 ```bash
 npm install ws
-npm install --save-dev @types/node
 ```
+
+> **Note**: The WebSocket adapter uses lazy loading - the `ws` package is only imported when you enable WebSocket transport. If the package is missing, you'll get a clear error message with installation instructions.
 
 **Configuration:**
 
@@ -1386,12 +1403,7 @@ One-way streaming from server to client. Perfect for:
 - Browser-based applications
 - Lightweight real-time updates
 
-**Installation:**
-
-```bash
-npm install rxjs
-npm install --save-dev @types/express
-```
+> **Note**: SSE transport uses `rxjs`, which is already included as a peer dependency. No additional installation required.
 
 **Configuration:**
 
@@ -1462,6 +1474,8 @@ Pub/Sub communication via Redis. Perfect for:
 ```bash
 npm install ioredis
 ```
+
+> **Note**: The Redis adapter uses lazy loading - `ioredis` is only imported when you enable Redis transport. If the package is missing, you'll get a clear error message with installation instructions.
 
 **Configuration:**
 
@@ -1548,6 +1562,8 @@ High-performance RPC with bidirectional streaming. Perfect for:
 ```bash
 npm install @grpc/grpc-js @grpc/proto-loader
 ```
+
+> **Note**: The gRPC adapter uses lazy loading - `@grpc/grpc-js` and `@grpc/proto-loader` are only imported when you enable gRPC transport. If packages are missing, you'll get a clear error message with installation instructions.
 
 **Configuration:**
 
