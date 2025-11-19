@@ -377,4 +377,190 @@ describe('introspectServer', () => {
             introspectServer('http://localhost:3000/mcp'),
         ).rejects.toThrow('Network error');
     });
+
+    it('should parse tool inputSchema properties correctly', async () => {
+        mockAxiosInstance.post
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        serverInfo: {
+                            name: 'Test Server',
+                            version: '1.0.0',
+                        },
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        tools: [
+                            {
+                                name: 'create_user',
+                                description: 'Create a new user',
+                                inputSchema: {
+                                    type: 'object',
+                                    properties: {
+                                        username: {
+                                            type: 'string',
+                                            description: 'User username',
+                                        },
+                                        email: {
+                                            type: 'string',
+                                            description: 'User email',
+                                        },
+                                        age: {
+                                            type: 'number',
+                                            description: 'User age',
+                                        },
+                                        role: {
+                                            type: 'string',
+                                            description: 'User role',
+                                            enum: ['admin', 'user', 'guest'],
+                                        },
+                                    },
+                                    required: ['username', 'email'],
+                                },
+                            },
+                        ],
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { resources: [] } },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { prompts: [] } },
+            });
+
+        const result = await introspectServer('http://localhost:3000');
+
+        expect(result.tools).toHaveLength(1);
+        expect(result.tools[0].name).toBe('create_user');
+        expect(result.tools[0].parameters).toHaveLength(4);
+
+        // Check username parameter
+        expect(result.tools[0].parameters[0]).toEqual({
+            name: 'username',
+            type: 'string',
+            description: 'User username',
+            required: true,
+            enum: undefined,
+        });
+
+        // Check email parameter
+        expect(result.tools[0].parameters[1]).toEqual({
+            name: 'email',
+            type: 'string',
+            description: 'User email',
+            required: true,
+            enum: undefined,
+        });
+
+        // Check age parameter (not required)
+        expect(result.tools[0].parameters[2]).toEqual({
+            name: 'age',
+            type: 'number',
+            description: 'User age',
+            required: false,
+            enum: undefined,
+        });
+
+        // Check role parameter with enum
+        expect(result.tools[0].parameters[3]).toEqual({
+            name: 'role',
+            type: 'string',
+            description: 'User role',
+            required: false,
+            enum: ['admin', 'user', 'guest'],
+        });
+    });
+
+    it('should handle inputSchema with missing type field', async () => {
+        mockAxiosInstance.post
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        serverInfo: { name: 'Test', version: '1.0.0' },
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        tools: [
+                            {
+                                name: 'test_tool',
+                                description: 'Test tool',
+                                inputSchema: {
+                                    properties: {
+                                        param1: {
+                                            description:
+                                                'Parameter without type',
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { resources: [] } },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { prompts: [] } },
+            });
+
+        const result = await introspectServer('http://localhost:3000');
+
+        expect(result.tools[0].parameters[0]).toEqual({
+            name: 'param1',
+            type: 'string', // Default type
+            description: 'Parameter without type',
+            required: false,
+            enum: undefined,
+        });
+    });
+
+    it('should handle inputSchema without required array', async () => {
+        mockAxiosInstance.post
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        serverInfo: { name: 'Test', version: '1.0.0' },
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    result: {
+                        tools: [
+                            {
+                                name: 'test_tool',
+                                description: 'Test tool',
+                                inputSchema: {
+                                    properties: {
+                                        param1: {
+                                            type: 'string',
+                                            description: 'Test parameter',
+                                        },
+                                    },
+                                    // No required array
+                                },
+                            },
+                        ],
+                    },
+                },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { resources: [] } },
+            })
+            .mockResolvedValueOnce({
+                data: { result: { prompts: [] } },
+            });
+
+        const result = await introspectServer('http://localhost:3000');
+
+        expect(result.tools[0].parameters[0].required).toBe(false);
+    });
 });

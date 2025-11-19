@@ -1,6 +1,6 @@
 # @hmake98/nestjs-mcp
 
-![Statements](https://img.shields.io/badge/statements-98.17%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-92.55%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-98.66%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.17%25-brightgreen.svg?style=flat)
+![Statements](https://img.shields.io/badge/statements-98.66%25-brightgreen.svg?style=flat) ![Branches](https://img.shields.io/badge/branches-92.06%25-brightgreen.svg?style=flat) ![Functions](https://img.shields.io/badge/functions-98.07%25-brightgreen.svg?style=flat) ![Lines](https://img.shields.io/badge/lines-98.66%25-brightgreen.svg?style=flat)
 
 A NestJS library for integrating the Model Context Protocol (MCP) into your applications. Built on top of the official [`@modelcontextprotocol/sdk`](https://github.com/modelcontextprotocol/typescript-sdk) 1.21.1, this package provides a decorator-based approach to building MCP servers with NestJS.
 
@@ -28,6 +28,7 @@ A NestJS library for integrating the Model Context Protocol (MCP) into your appl
 - 🔄 **Auto-discovery**: Automatically discovers and registers tools, resources, and prompts from your providers
 - 🛡️ **Guards & Interceptors**: Production-ready execution pipeline with authentication, rate limiting, logging, and error handling
 - 🔐 **Security Built-in**: AuthGuard, RateLimitGuard, and PermissionGuard for access control
+- 🌐 **Public Routes by Default**: All MCP endpoints automatically bypass application authentication while respecting your auth configuration
 - 📊 **Observability**: LoggingInterceptor, TimeoutInterceptor, and ErrorMappingInterceptor for monitoring
 - 🧪 **Built-in Playground**: Interactive web UI at `/mcp/playground` for testing tools, resources, and prompts without curl
 - 🚀 **Client Generator**: CLI tool to generate 100% type-safe TypeScript clients from your running server
@@ -704,6 +705,13 @@ interface MCPModuleOptions {
     // When false: MCP endpoints respect global prefix (e.g., /v1/mcp)
     // Note: Application-level guards, interceptors, and middleware still apply
 
+    // Public route metadata key configuration
+    publicMetadataKey?: string; // Default: 'mcp:isPublic'
+    // All MCP endpoints (POST /mcp, POST /mcp/batch, GET /mcp/playground) are
+    // automatically marked as public to bypass application authentication.
+    // Use this option to customize the metadata key if your app uses a different convention.
+    // Example: publicMetadataKey: 'isPublic' to match your existing auth guard
+
     // Logging configuration
     logLevel?: 'error' | 'warn' | 'info' | 'debug' | 'verbose'; // Default: 'info'
     enableLogging?: boolean; // Deprecated: use logLevel instead
@@ -808,11 +816,22 @@ export class AppModule {}
 
 When integrating MCP into a server application with a global prefix (e.g., `/v1`), you may want MCP endpoints at the root level (`/mcp`) instead of under the prefix (`/v1/mcp`). The `rootPath` option combined with NestJS's `exclude` configuration makes this possible.
 
-**Important Authentication Behavior:**
+**🔑 Important Authentication Behavior:**
 
-- **Playground is always public**: The `/mcp/playground` endpoint is automatically marked as public and will bypass authentication
-- **Other MCP endpoints adapt to your app's auth**: If you have application-level auth guards, they will automatically apply to `/mcp` and `/mcp/batch` endpoints
-- **No auth by default**: If your application doesn't have global auth configured, MCP endpoints will be public by default
+All MCP endpoints are **automatically marked as public** by default to ensure seamless integration:
+
+- **All MCP endpoints are public by default**: `POST /mcp`, `POST /mcp/batch`, and `GET /mcp/playground` all bypass application authentication
+- **Seamless integration**: MCP endpoints work out-of-the-box without requiring authentication configuration
+- **Customizable**: Use the `publicMetadataKey` option to integrate with your app's existing public route system
+- **Flexible security**: You can still add MCP-specific guards using `@UseMCPGuards()` decorator for per-tool/resource authentication
+
+**Why are MCP endpoints public?**
+
+MCP is designed as a protocol layer for AI model communication. Making endpoints public by default allows:
+- ✅ Zero-configuration integration with Claude Desktop and other MCP clients
+- ✅ Easy testing and development with the built-in playground
+- ✅ Flexibility to add custom authentication per-tool/resource as needed
+- ✅ Standard MCP protocol behavior across implementations
 
 **Example: MCP endpoints at root with global auth guard**
 
@@ -834,17 +853,17 @@ export class AuthGuard implements CanActivate {
     constructor(private reflector: Reflector) {}
 
     canActivate(context: ExecutionContext): boolean {
-        // Check if route is marked as public (e.g., playground)
+        // Check if route is marked as public (MCP endpoints are automatically marked)
         const isPublic = this.reflector.getAllAndOverride<boolean>(
-            MCP_PUBLIC_KEY,
+            MCP_PUBLIC_KEY, // Default: 'mcp:isPublic'
             [context.getHandler(), context.getClass()],
         );
 
         if (isPublic) {
-            return true; // Skip auth for public routes
+            return true; // Skip auth for public routes (all MCP endpoints)
         }
 
-        // Your auth logic here
+        // Your auth logic for other API routes
         const request = context.switchToHttp().getRequest();
         const token = request.headers['authorization'];
 
@@ -871,6 +890,8 @@ export class AuthGuard implements CanActivate {
             },
             rootPath: true, // Use root-level paths for MCP
             logLevel: 'info',
+            // Optional: Use your app's existing public metadata key
+            // publicMetadataKey: 'isPublic',
         }),
     ],
     providers: [
@@ -894,9 +915,9 @@ async function bootstrap() {
 
     // Result:
     // - API endpoints: /v1/users, /v1/products, etc. (protected by AuthGuard)
-    // - /mcp (POST) - Protected by AuthGuard
-    // - /mcp/batch (POST) - Protected by AuthGuard
-    // - /mcp/playground (GET) - Public (automatically bypasses AuthGuard)
+    // - /mcp (POST) - Public (bypasses AuthGuard automatically)
+    // - /mcp/batch (POST) - Public (bypasses AuthGuard automatically)
+    // - /mcp/playground (GET) - Public (bypasses AuthGuard automatically)
 
     await app.listen(3000);
 }
@@ -913,106 +934,76 @@ app.setGlobalPrefix('v1'); // No exclude needed
 
 // Result:
 // - API endpoints: /v1/users, /v1/products, etc.
-// - /v1/mcp (POST) - Adapts to application auth
-// - /v1/mcp/batch (POST) - Adapts to application auth
-// - /v1/mcp/playground (GET) - Always public
+// - /v1/mcp (POST) - Public (bypasses AuthGuard automatically)
+// - /v1/mcp/batch (POST) - Public (bypasses AuthGuard automatically)
+// - /v1/mcp/playground (GET) - Public (bypasses AuthGuard automatically)
 ```
 
-**Example: Different authentication for MCP vs API endpoints**
+**Example: Adding custom authentication to MCP endpoints**
 
-If you need separate authentication logic:
+If you need to protect MCP endpoints with custom authentication, you have two options:
+
+**Option 1: Remove the public metadata (not recommended)**
+
+You can override the public behavior, but this breaks standard MCP client compatibility:
 
 ```typescript
+// This approach is NOT recommended as it breaks MCP protocol conventions
+// MCP clients expect public endpoints for protocol-level communication
+```
+
+**Option 2: Use MCP Guards for per-tool authentication (recommended)**
+
+Instead of protecting the protocol-level endpoints, add authentication at the tool/resource level:
+
+```typescript
+import { UseMCPGuards, MCPGuard } from '@hmake98/nestjs-mcp';
+
 @Injectable()
-export class AuthGuard implements CanActivate {
-    constructor(private reflector: Reflector) {}
+export class ToolAuthGuard implements MCPGuard {
+    async canActivate(context: MCPExecutionContext): Promise<boolean> {
+        const request = context.getRequest();
+        const apiKey = request.params?.auth?.apiKey;
 
-    canActivate(context: ExecutionContext): boolean {
-        // Always allow public routes (playground)
-        const isPublic = this.reflector.getAllAndOverride<boolean>(
-            MCP_PUBLIC_KEY,
-            [context.getHandler(), context.getClass()],
-        );
-        if (isPublic) return true;
-
-        const request = context.switchToHttp().getRequest();
-        const path = request.path;
-
-        // MCP-specific authentication
-        if (path.startsWith('/mcp')) {
-            return this.validateMCPAuth(request);
+        if (!apiKey || apiKey !== process.env.MCP_API_KEY) {
+            throw new MCPUnauthorizedException('Invalid API key');
         }
-
-        // Standard API authentication
-        return this.validateAPIAuth(request);
-    }
-
-    private validateMCPAuth(request: any): boolean {
-        // MCP uses API key authentication
-        const apiKey = request.headers['x-mcp-api-key'];
-        return apiKey === process.env.MCP_API_KEY;
-    }
-
-    private validateAPIAuth(request: any): boolean {
-        // API uses JWT authentication
-        const token = request.headers['authorization'];
-        return this.validateJWT(token);
+        return true;
     }
 }
-```
-
-**Example: Using MCP with JWT authentication**
-
-```typescript
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
-    constructor(
-        private reflector: Reflector,
-        private jwtService: JwtService,
-    ) {}
-
-    async canActivate(context: ExecutionContext): Promise<boolean> {
-        // Skip auth for public routes (playground)
-        const isPublic = this.reflector.getAllAndOverride<boolean>(
-            MCP_PUBLIC_KEY,
-            [context.getHandler(), context.getClass()],
-        );
-        if (isPublic) return true;
-
-        const request = context.switchToHttp().getRequest();
-        const token = this.extractTokenFromHeader(request);
-
-        if (!token) {
-            throw new UnauthorizedException();
-        }
-
-        try {
-            const payload = await this.jwtService.verifyAsync(token);
-            request['user'] = payload; // Attach user to request
-            return true;
-        } catch {
-            throw new UnauthorizedException();
-        }
+export class SecureToolsService {
+    // This tool requires authentication
+    @UseMCPGuards(ToolAuthGuard)
+    @MCPTool({
+        name: 'secure-operation',
+        description: 'A secure operation requiring authentication',
+    })
+    async secureOperation(params: { data: string; auth: { apiKey: string } }) {
+        return { result: 'Protected data' };
     }
 
-    private extractTokenFromHeader(request: any): string | undefined {
-        const [type, token] = request.headers.authorization?.split(' ') ?? [];
-        return type === 'Bearer' ? token : undefined;
+    // This tool is public (no guard)
+    @MCPTool({
+        name: 'public-operation',
+        description: 'A public operation',
+    })
+    async publicOperation(params: { data: string }) {
+        return { result: 'Public data' };
     }
 }
 ```
 
 **Key Points:**
 
+- **All MCP endpoints are public by default** - This is the standard MCP protocol behavior
 - `rootPath: true` places MCP at `/mcp` (requires `exclude` in `setGlobalPrefix`)
 - `rootPath: false` (default) places MCP at `/{globalPrefix}/mcp`
-- **Playground (`/mcp/playground`) is always public** - no authentication required
-- **Other MCP endpoints (`/mcp`, `/mcp/batch`) adapt to application-level auth**
-- Use `MCP_PUBLIC_KEY` constant to check for public routes in your guards
-- Application-level guards, interceptors, and middleware apply to all MCP endpoints
-- You can implement different auth strategies for MCP vs API endpoints
+- Use `MCP_PUBLIC_KEY` constant in your auth guards to check for public routes
+- For authentication, use MCP Guards (`@UseMCPGuards()`) at the tool/resource level instead of global auth
+- `publicMetadataKey` option allows integration with your app's existing public route system
+- Application-level interceptors and middleware still apply to all MCP endpoints
 
 **Custom Public Metadata Key**
 

@@ -704,4 +704,269 @@ describe('MCPDiscoveryService', () => {
             expect(tools[0].parameters).toEqual([]);
         });
     });
+
+    describe('buildDeprecationMessage', () => {
+        it('should build complete deprecation message with all fields', () => {
+            const provider = new TestProvider();
+            const wrapper: InstanceWrapper = {
+                instance: provider,
+                name: 'TestProvider',
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'testTool',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_TOOL_METADATA) {
+                    return {
+                        name: 'deprecated-tool',
+                        description: 'A deprecated tool',
+                        deprecation: {
+                            deprecated: true,
+                            message: 'This tool is no longer recommended.',
+                            since: '2.0.0',
+                            removeIn: '3.0.0',
+                            replacedBy: 'new-tool',
+                        },
+                    };
+                }
+                return undefined;
+            });
+
+            const tools = service.discoverTools();
+
+            expect(tools).toHaveLength(1);
+            expect(tools[0].deprecated).toBe(true);
+            expect(tools[0].deprecationMessage).toBe(
+                "This tool is no longer recommended. Deprecated since 2.0.0. Will be removed in 3.0.0. Use 'new-tool' instead.",
+            );
+        });
+
+        it('should have undefined deprecation message when message not provided', () => {
+            const provider = new TestProvider();
+            const wrapper: InstanceWrapper = {
+                instance: provider,
+                name: 'TestProvider',
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'testTool',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_TOOL_METADATA) {
+                    return {
+                        name: 'deprecated-tool',
+                        description: 'A deprecated tool',
+                        deprecation: {
+                            deprecated: true,
+                        },
+                    };
+                }
+                return undefined;
+            });
+
+            const tools = service.discoverTools();
+
+            expect(tools).toHaveLength(1);
+            expect(tools[0].deprecated).toBe(true);
+            expect(tools[0].deprecationMessage).toBeUndefined();
+        });
+
+        it('should build deprecation message with only since field', () => {
+            const provider = new TestProvider();
+            const wrapper: InstanceWrapper = {
+                instance: provider,
+                name: 'TestProvider',
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'testTool',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_TOOL_METADATA) {
+                    return {
+                        name: 'deprecated-tool',
+                        description: 'A deprecated tool',
+                        deprecation: {
+                            deprecated: true,
+                            message: 'Use with caution.',
+                            since: '1.5.0',
+                        },
+                    };
+                }
+                return undefined;
+            });
+
+            const tools = service.discoverTools();
+
+            expect(tools).toHaveLength(1);
+            expect(tools[0].deprecationMessage).toBe(
+                'Use with caution. Deprecated since 1.5.0.',
+            );
+        });
+
+        it('should build deprecation message with only removeIn field', () => {
+            const provider = new TestProvider();
+            const wrapper: InstanceWrapper = {
+                instance: provider,
+                name: 'TestProvider',
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'testTool',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_TOOL_METADATA) {
+                    return {
+                        name: 'deprecated-tool',
+                        description: 'A deprecated tool',
+                        deprecation: {
+                            deprecated: true,
+                            message: 'Will be removed soon.',
+                            removeIn: '4.0.0',
+                        },
+                    };
+                }
+                return undefined;
+            });
+
+            const tools = service.discoverTools();
+
+            expect(tools).toHaveLength(1);
+            expect(tools[0].deprecationMessage).toBe(
+                'Will be removed soon. Will be removed in 4.0.0.',
+            );
+        });
+
+        it('should build deprecation message with only replacedBy field', () => {
+            const provider = new TestProvider();
+            const wrapper: InstanceWrapper = {
+                instance: provider,
+                name: 'TestProvider',
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'testTool',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_TOOL_METADATA) {
+                    return {
+                        name: 'deprecated-tool',
+                        description: 'A deprecated tool',
+                        deprecation: {
+                            deprecated: true,
+                            message: 'Use the new version.',
+                            replacedBy: 'better-tool',
+                        },
+                    };
+                }
+                return undefined;
+            });
+
+            const tools = service.discoverTools();
+
+            expect(tools).toHaveLength(1);
+            expect(tools[0].deprecationMessage).toBe(
+                "Use the new version. Use 'better-tool' instead.",
+            );
+        });
+
+        it('should build deprecation message for resources', () => {
+            const provider = new TestProvider();
+            const wrapper: InstanceWrapper = {
+                instance: provider,
+                name: 'TestProvider',
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'testResource',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_RESOURCE_METADATA) {
+                    return {
+                        uri: 'deprecated://resource',
+                        name: 'Deprecated Resource',
+                        description: 'A deprecated resource',
+                        deprecation: {
+                            deprecated: true,
+                            message: 'Resource no longer maintained.',
+                            since: '1.0.0',
+                            removeIn: '2.0.0',
+                        },
+                    };
+                }
+                return undefined;
+            });
+
+            const resources = service.discoverResources();
+
+            expect(resources).toHaveLength(1);
+            expect(resources[0].deprecated).toBe(true);
+            expect(resources[0].deprecationMessage).toBe(
+                'Resource no longer maintained. Deprecated since 1.0.0. Will be removed in 2.0.0.',
+            );
+        });
+
+        it('should build deprecation message for prompts', () => {
+            const provider = new TestProvider();
+            const wrapper: InstanceWrapper = {
+                instance: provider,
+                name: 'TestProvider',
+            } as InstanceWrapper;
+
+            jest.spyOn(discoveryService, 'getProviders').mockReturnValue([
+                wrapper,
+            ]);
+            jest.spyOn(metadataScanner, 'getAllMethodNames').mockReturnValue([
+                'testPrompt',
+            ]);
+
+            jest.spyOn(reflector, 'get').mockImplementation((key) => {
+                if (key === MCP_PROMPT_METADATA) {
+                    return {
+                        name: 'deprecated-prompt',
+                        description: 'A deprecated prompt',
+                        deprecation: {
+                            deprecated: true,
+                            message: 'Prompt format changed.',
+                            replacedBy: 'new-prompt',
+                        },
+                    };
+                }
+                return undefined;
+            });
+
+            const prompts = service.discoverPrompts();
+
+            expect(prompts).toHaveLength(1);
+            expect(prompts[0].deprecated).toBe(true);
+            expect(prompts[0].deprecationMessage).toBe(
+                "Prompt format changed. Use 'new-prompt' instead.",
+            );
+        });
+    });
 });

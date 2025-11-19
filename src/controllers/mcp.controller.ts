@@ -21,7 +21,10 @@ import { MCPLogger, LogLevel } from '../utils';
  * Factory function to create MCP controller with configurable path
  * @internal
  */
-export function createMCPController(path: string) {
+export function createMCPController(
+    path: string,
+    publicMetadataKey: string = MCP_PUBLIC_KEY,
+) {
     @Controller(path)
     class MCPControllerClass {
         public readonly logger: MCPLogger;
@@ -43,6 +46,7 @@ export function createMCPController(path: string) {
          */
         @Post()
         @HttpCode(HttpStatus.OK)
+        @SetMetadata(publicMetadataKey, true) // Mark as public to bypass auth
         async handleRequest(@Body() request: MCPRequest): Promise<MCPResponse> {
             if (this.options.enableLogging) {
                 this.logger.debug(
@@ -66,6 +70,7 @@ export function createMCPController(path: string) {
          */
         @Post('batch')
         @HttpCode(HttpStatus.OK)
+        @SetMetadata(publicMetadataKey, true) // Mark as public to bypass auth
         async handleBatchRequest(
             @Body() requests: MCPRequest[],
         ): Promise<MCPResponse[]> {
@@ -89,7 +94,7 @@ export function createMCPController(path: string) {
         }
 
         @Get('playground')
-        @SetMetadata(MCP_PUBLIC_KEY, true) // Mark playground as public
+        @SetMetadata(publicMetadataKey, true) // Mark playground as public
         getPlayground(@Res() res: Response) {
             if (this.options.enableLogging) {
                 this.logger.log('Serving MCP Playground UI');
@@ -144,6 +149,7 @@ export class MCPController {
      */
     @Post()
     @HttpCode(HttpStatus.OK)
+    @SetMetadata(MCP_PUBLIC_KEY, true) // Mark as public to bypass auth
     async handleRequest(@Body() request: MCPRequest): Promise<MCPResponse> {
         if (this.options.enableLogging) {
             this.logger.debug(`Received request: ${JSON.stringify(request)}`);
@@ -163,6 +169,7 @@ export class MCPController {
      */
     @Post('batch')
     @HttpCode(HttpStatus.OK)
+    @SetMetadata(MCP_PUBLIC_KEY, true) // Mark as public to bypass auth
     async handleBatchRequest(
         @Body() requests: MCPRequest[],
     ): Promise<MCPResponse[]> {

@@ -503,4 +503,117 @@ describe('MCPExecutionService', () => {
             });
         });
     });
+
+    describe('resolveGuard and resolveInterceptor without moduleRef', () => {
+        let serviceWithoutModuleRef: MCPExecutionService;
+
+        beforeEach(async () => {
+            // Create service without ModuleRef
+            const module: TestingModule = await Test.createTestingModule({
+                providers: [MCPExecutionService],
+            }).compile();
+
+            serviceWithoutModuleRef =
+                module.get<MCPExecutionService>(MCPExecutionService);
+        });
+
+        it('should create guard instance directly when moduleRef is not available', async () => {
+            const handler = jest.fn().mockResolvedValue('result');
+
+            const result =
+                await serviceWithoutModuleRef.executeWithGuardsAndInterceptors(
+                    [TestGuard],
+                    [],
+                    mockContext,
+                    handler,
+                );
+
+            expect(result).toBe('result');
+        });
+
+        it('should throw error when guard creation fails without moduleRef', async () => {
+            // Create a guard that throws an error in the constructor
+            class InvalidGuard implements MCPGuard {
+                constructor() {
+                    throw new Error('Cannot instantiate guard');
+                }
+                async canActivate(
+                    _context: MCPExecutionContext,
+                ): Promise<boolean> {
+                    return true;
+                }
+            }
+
+            const handler = jest.fn().mockResolvedValue('result');
+
+            await expect(
+                serviceWithoutModuleRef.executeWithGuardsAndInterceptors(
+                    [InvalidGuard as unknown as typeof TestGuard],
+                    [],
+                    mockContext,
+                    handler,
+                ),
+            ).rejects.toThrow(MCPException);
+
+            await expect(
+                serviceWithoutModuleRef.executeWithGuardsAndInterceptors(
+                    [InvalidGuard as unknown as typeof TestGuard],
+                    [],
+                    mockContext,
+                    handler,
+                ),
+            ).rejects.toThrow('Failed to resolve guard: InvalidGuard');
+        });
+
+        it('should create interceptor instance directly when moduleRef is not available', async () => {
+            const handler = jest.fn().mockResolvedValue('result');
+
+            const result =
+                await serviceWithoutModuleRef.executeWithGuardsAndInterceptors(
+                    [],
+                    [TestInterceptor],
+                    mockContext,
+                    handler,
+                );
+
+            expect(result).toBe('result');
+        });
+
+        it('should throw error when interceptor creation fails without moduleRef', async () => {
+            // Create an interceptor that throws an error in the constructor
+            class InvalidInterceptor implements MCPInterceptor {
+                constructor() {
+                    throw new Error('Cannot instantiate interceptor');
+                }
+                async intercept(
+                    _context: MCPExecutionContext,
+                    next: MCPCallHandler,
+                ): Promise<unknown> {
+                    return next.handle();
+                }
+            }
+
+            const handler = jest.fn().mockResolvedValue('result');
+
+            await expect(
+                serviceWithoutModuleRef.executeWithGuardsAndInterceptors(
+                    [],
+                    [InvalidInterceptor as unknown as typeof TestInterceptor],
+                    mockContext,
+                    handler,
+                ),
+            ).rejects.toThrow(MCPException);
+
+            await expect(
+                serviceWithoutModuleRef.executeWithGuardsAndInterceptors(
+                    [],
+                    [InvalidInterceptor as unknown as typeof TestInterceptor],
+                    mockContext,
+                    handler,
+                ),
+            ).rejects.toThrow(
+                'Failed to resolve interceptor: InvalidInterceptor',
+            );
+        });
+    });
 });

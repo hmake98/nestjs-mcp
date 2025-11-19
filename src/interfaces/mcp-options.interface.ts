@@ -54,8 +54,8 @@ export interface MCPModuleOptions {
 
     /**
      * Metadata key for marking routes that should bypass authentication
-     * The playground endpoint is automatically marked as public
-     * @default 'isPublic'
+     * All MCP endpoints (POST /mcp, POST /mcp/batch, GET /mcp/playground) are automatically marked as public
+     * @default 'mcp:isPublic'
      */
     publicMetadataKey?: string;
 

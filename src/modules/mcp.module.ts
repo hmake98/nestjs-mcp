@@ -20,7 +20,7 @@ import {
     MCPSDKService,
     MCPExecutionService,
 } from '../services';
-import { MCPController, createMCPController } from '../controllers';
+import { createMCPController } from '../controllers';
 import { MCPLogger, LogLevel } from '../utils';
 
 /**
@@ -80,10 +80,11 @@ export class MCPModule implements OnApplicationBootstrap {
      * Register the MCP module with synchronous options
      */
     static forRoot(options: MCPModuleOptions): DynamicModule {
-        // Determine controller based on rootPath option
+        // Determine controller based on rootPath option and publicMetadataKey
+        const publicKey = options.publicMetadataKey || 'mcp:isPublic';
         const ControllerClass = options.rootPath
-            ? createMCPController('/mcp') // Absolute path ignores global prefix
-            : MCPController; // Relative path 'mcp' respects global prefix
+            ? createMCPController('/mcp', publicKey) // Absolute path ignores global prefix
+            : createMCPController('mcp', publicKey); // Relative path 'mcp' respects global prefix
 
         return {
             global: true,
@@ -116,16 +117,17 @@ export class MCPModule implements OnApplicationBootstrap {
      * Register the MCP module with asynchronous options
      */
     static forRootAsync(options: MCPModuleAsyncOptions): DynamicModule {
-        // For async options, we can't determine the controller at module creation time
-        // So we use the default controller (MCPController with 'mcp' path)
-        // Users can override by providing rootPath in the factory
+        // For async options, we use the default controller with default public key
+        // since we can't access the options at module creation time
+        // Users should use forRoot() if they need custom publicMetadataKey
         const asyncProviders = this.createAsyncProviders(options);
+        const DefaultController = createMCPController('mcp', 'mcp:isPublic');
 
         return {
             global: true,
             module: MCPModule,
             imports: [DiscoveryModule, ...(options.imports || [])],
-            controllers: [MCPController], // Uses 'mcp' path (relative, respects global prefix)
+            controllers: [DefaultController], // Uses 'mcp' path (relative, respects global prefix)
             providers: [
                 ...asyncProviders,
                 Reflector,

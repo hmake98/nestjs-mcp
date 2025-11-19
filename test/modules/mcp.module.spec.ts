@@ -5,7 +5,6 @@ import { MCPService } from '../../src/services/mcp.service';
 import { MCPRegistryService } from '../../src/services/mcp-registry.service';
 import { MCPDiscoveryService } from '../../src/services/mcp-discovery.service';
 import { MCPSDKService } from '../../src/services/mcp-sdk.service';
-import { MCPController } from '../../src/controllers/mcp.controller';
 import { MCP_MODULE_OPTIONS } from '../../src/constants';
 import { MCPModuleOptions } from '../../src/interfaces';
 
@@ -53,7 +52,8 @@ describe('MCPModule', () => {
             const module = MCPModule.forRoot(mockOptions);
 
             expect(module.module).toBe(MCPModule);
-            expect(module.controllers).toContain(MCPController);
+            expect(module.controllers).toBeDefined();
+            expect(module.controllers?.length).toBe(1); // Should have one controller
             expect(module.providers).toBeDefined();
             expect(module.exports).toBeDefined();
         });
@@ -88,7 +88,8 @@ describe('MCPModule', () => {
             });
 
             expect(module.module).toBe(MCPModule);
-            expect(module.controllers).toContain(MCPController);
+            expect(module.controllers).toBeDefined();
+            expect(module.controllers?.length).toBe(1); // Should have one controller
         });
 
         it('should handle useFactory with inject', () => {
@@ -186,13 +187,14 @@ describe('MCPModule', () => {
             const registryService = module.get(MCPRegistryService);
             const discoveryService = module.get(MCPDiscoveryService);
             const sdkService = module.get(MCPSDKService);
-            const controller = module.get(MCPController);
 
             expect(mcpService).toBeDefined();
             expect(registryService).toBeDefined();
             expect(discoveryService).toBeDefined();
             expect(sdkService).toBeDefined();
-            expect(controller).toBeDefined();
+
+            // Controller is dynamically created, so we just verify services are wired up
+            expect(mcpService).toBeInstanceOf(MCPService);
         });
 
         it('should inject options into services', async () => {
