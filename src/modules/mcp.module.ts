@@ -117,17 +117,29 @@ export class MCPModule implements OnApplicationBootstrap {
      * Register the MCP module with asynchronous options
      */
     static forRootAsync(options: MCPModuleAsyncOptions): DynamicModule {
-        // For async options, we use the default controller with default public key
-        // since we can't access the options at module creation time
-        // Users should use forRoot() if they need custom publicMetadataKey
         const asyncProviders = this.createAsyncProviders(options);
-        const DefaultController = createMCPController('mcp', 'mcp:isPublic');
+
+        // Extract publicMetadataKey and rootPath from options if they can be determined synchronously
+        // This is a limitation - for full async support, users should provide these options directly
+        let publicKey = 'mcp:isPublic';
+        let rootPath = false;
+
+        // Try to extract these from the options if provided directly
+        if (options.publicMetadataKey) {
+            publicKey = options.publicMetadataKey;
+        }
+        if (options.rootPath !== undefined) {
+            rootPath = options.rootPath;
+        }
+
+        const path = rootPath ? '/mcp' : 'mcp';
+        const ControllerClass = createMCPController(path, publicKey);
 
         return {
             global: true,
             module: MCPModule,
             imports: [DiscoveryModule, ...(options.imports || [])],
-            controllers: [DefaultController], // Uses 'mcp' path (relative, respects global prefix)
+            controllers: [ControllerClass],
             providers: [
                 ...asyncProviders,
                 Reflector,

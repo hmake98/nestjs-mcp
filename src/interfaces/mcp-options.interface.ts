@@ -102,4 +102,16 @@ export interface MCPModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
         ...args: unknown[]
     ) => Promise<MCPModuleOptions> | MCPModuleOptions;
     inject?: (string | symbol | Type | Abstract<unknown>)[];
+    /**
+     * Metadata key for marking routes as public (must be provided at module level for async config)
+     * Due to NestJS limitations, this cannot be provided via useFactory
+     * @default 'mcp:isPublic'
+     */
+    publicMetadataKey?: string;
+    /**
+     * Use root-level path for MCP endpoints (must be provided at module level for async config)
+     * Due to NestJS limitations, this cannot be provided via useFactory
+     * @default false
+     */
+    rootPath?: boolean;
 }
