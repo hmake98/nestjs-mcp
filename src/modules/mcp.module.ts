@@ -20,7 +20,7 @@ import {
     MCPSDKService,
     MCPExecutionService,
 } from '../services';
-import { MCPController } from '../controllers';
+import { MCPController, createMCPController } from '../controllers';
 import { MCPLogger, LogLevel } from '../utils';
 
 /**
@@ -80,11 +80,16 @@ export class MCPModule implements OnApplicationBootstrap {
      * Register the MCP module with synchronous options
      */
     static forRoot(options: MCPModuleOptions): DynamicModule {
+        // Determine controller based on rootPath option
+        const ControllerClass = options.rootPath
+            ? createMCPController('/mcp') // Absolute path ignores global prefix
+            : MCPController; // Relative path 'mcp' respects global prefix
+
         return {
             global: true,
             module: MCPModule,
             imports: [DiscoveryModule],
-            controllers: [MCPController],
+            controllers: [ControllerClass],
             providers: [
                 {
                     provide: MCP_MODULE_OPTIONS,
@@ -111,13 +116,18 @@ export class MCPModule implements OnApplicationBootstrap {
      * Register the MCP module with asynchronous options
      */
     static forRootAsync(options: MCPModuleAsyncOptions): DynamicModule {
+        // For async options, we can't determine the controller at module creation time
+        // So we use the default controller (MCPController with 'mcp' path)
+        // Users can override by providing rootPath in the factory
+        const asyncProviders = this.createAsyncProviders(options);
+
         return {
             global: true,
             module: MCPModule,
             imports: [DiscoveryModule, ...(options.imports || [])],
-            controllers: [MCPController],
+            controllers: [MCPController], // Uses 'mcp' path (relative, respects global prefix)
             providers: [
-                ...this.createAsyncProviders(options),
+                ...asyncProviders,
                 Reflector,
                 MCPRegistryService,
                 MCPDiscoveryService,

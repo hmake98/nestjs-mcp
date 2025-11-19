@@ -10,6 +10,7 @@ export const MCP_PROMPT_METADATA = 'mcp:prompt';
 export const MCP_TOOL_PARAM_METADATA = 'mcp:tool:param';
 export const MCP_GUARDS_METADATA = 'mcp:guards';
 export const MCP_INTERCEPTORS_METADATA = 'mcp:interceptors';
+export const MCP_PUBLIC_KEY = 'mcp:isPublic';
 
 /**
  * MCP Protocol version

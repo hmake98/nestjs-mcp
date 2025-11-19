@@ -698,6 +698,12 @@ interface MCPModuleOptions {
     // HTTP endpoint configuration
     globalPrefix?: string; // Default: 'mcp'
 
+    // Root-level path configuration (bypasses application global prefix)
+    rootPath?: boolean; // Default: false
+    // When true: MCP endpoints are at /mcp (ignores app.setGlobalPrefix())
+    // When false: MCP endpoints respect global prefix (e.g., /v1/mcp)
+    // Note: Application-level guards, interceptors, and middleware still apply
+
     // Logging configuration
     logLevel?: 'error' | 'warn' | 'info' | 'debug' | 'verbose'; // Default: 'info'
     enableLogging?: boolean; // Deprecated: use logLevel instead
@@ -797,6 +803,229 @@ export class MCPConfigService implements MCPOptionsFactory {
 })
 export class AppModule {}
 ```
+
+### Root-Level Endpoints with Application Authentication
+
+When integrating MCP into a server application with a global prefix (e.g., `/v1`), you may want MCP endpoints at the root level (`/mcp`) instead of under the prefix (`/v1/mcp`). The `rootPath` option combined with NestJS's `exclude` configuration makes this possible.
+
+**Important Authentication Behavior:**
+
+- **Playground is always public**: The `/mcp/playground` endpoint is automatically marked as public and will bypass authentication
+- **Other MCP endpoints adapt to your app's auth**: If you have application-level auth guards, they will automatically apply to `/mcp` and `/mcp/batch` endpoints
+- **No auth by default**: If your application doesn't have global auth configured, MCP endpoints will be public by default
+
+**Example: MCP endpoints at root with global auth guard**
+
+```typescript
+import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { MCPModule, MCP_PUBLIC_KEY } from '@hmake98/nestjs-mcp';
+import { Reflector } from '@nestjs/core';
+import {
+    Injectable,
+    CanActivate,
+    ExecutionContext,
+    UnauthorizedException,
+} from '@nestjs/common';
+
+// Your authentication guard
+@Injectable()
+export class AuthGuard implements CanActivate {
+    constructor(private reflector: Reflector) {}
+
+    canActivate(context: ExecutionContext): boolean {
+        // Check if route is marked as public (e.g., playground)
+        const isPublic = this.reflector.getAllAndOverride<boolean>(
+            MCP_PUBLIC_KEY,
+            [context.getHandler(), context.getClass()],
+        );
+
+        if (isPublic) {
+            return true; // Skip auth for public routes
+        }
+
+        // Your auth logic here
+        const request = context.switchToHttp().getRequest();
+        const token = request.headers['authorization'];
+
+        if (!token) {
+            throw new UnauthorizedException('No token provided');
+        }
+
+        // Validate token...
+        return this.validateToken(token);
+    }
+
+    private validateToken(token: string): boolean {
+        // Your token validation logic
+        return token === 'valid-token';
+    }
+}
+
+@Module({
+    imports: [
+        MCPModule.forRoot({
+            serverInfo: {
+                name: 'my-api-server',
+                version: '1.0.0',
+            },
+            rootPath: true, // Use root-level paths for MCP
+            logLevel: 'info',
+        }),
+    ],
+    providers: [
+        // Global guard applies to ALL routes except those marked as public
+        {
+            provide: APP_GUARD,
+            useClass: AuthGuard,
+        },
+    ],
+})
+export class AppModule {}
+
+// In your main.ts
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule);
+
+    // Set global prefix for API routes, but exclude MCP endpoints
+    app.setGlobalPrefix('v1', {
+        exclude: ['/mcp(.*)'], // Regex pattern to exclude all MCP routes
+    });
+
+    // Result:
+    // - API endpoints: /v1/users, /v1/products, etc. (protected by AuthGuard)
+    // - /mcp (POST) - Protected by AuthGuard
+    // - /mcp/batch (POST) - Protected by AuthGuard
+    // - /mcp/playground (GET) - Public (automatically bypasses AuthGuard)
+
+    await app.listen(3000);
+}
+bootstrap();
+```
+
+**Without `rootPath` (default behavior)**
+
+If you don't set `rootPath: true`, MCP endpoints will respect the global prefix:
+
+```typescript
+// main.ts
+app.setGlobalPrefix('v1'); // No exclude needed
+
+// Result:
+// - API endpoints: /v1/users, /v1/products, etc.
+// - /v1/mcp (POST) - Adapts to application auth
+// - /v1/mcp/batch (POST) - Adapts to application auth
+// - /v1/mcp/playground (GET) - Always public
+```
+
+**Example: Different authentication for MCP vs API endpoints**
+
+If you need separate authentication logic:
+
+```typescript
+@Injectable()
+export class AuthGuard implements CanActivate {
+    constructor(private reflector: Reflector) {}
+
+    canActivate(context: ExecutionContext): boolean {
+        // Always allow public routes (playground)
+        const isPublic = this.reflector.getAllAndOverride<boolean>(
+            MCP_PUBLIC_KEY,
+            [context.getHandler(), context.getClass()],
+        );
+        if (isPublic) return true;
+
+        const request = context.switchToHttp().getRequest();
+        const path = request.path;
+
+        // MCP-specific authentication
+        if (path.startsWith('/mcp')) {
+            return this.validateMCPAuth(request);
+        }
+
+        // Standard API authentication
+        return this.validateAPIAuth(request);
+    }
+
+    private validateMCPAuth(request: any): boolean {
+        // MCP uses API key authentication
+        const apiKey = request.headers['x-mcp-api-key'];
+        return apiKey === process.env.MCP_API_KEY;
+    }
+
+    private validateAPIAuth(request: any): boolean {
+        // API uses JWT authentication
+        const token = request.headers['authorization'];
+        return this.validateJWT(token);
+    }
+}
+```
+
+**Example: Using MCP with JWT authentication**
+
+```typescript
+import { JwtService } from '@nestjs/jwt';
+
+@Injectable()
+export class JwtAuthGuard implements CanActivate {
+    constructor(
+        private reflector: Reflector,
+        private jwtService: JwtService,
+    ) {}
+
+    async canActivate(context: ExecutionContext): Promise<boolean> {
+        // Skip auth for public routes (playground)
+        const isPublic = this.reflector.getAllAndOverride<boolean>(
+            MCP_PUBLIC_KEY,
+            [context.getHandler(), context.getClass()],
+        );
+        if (isPublic) return true;
+
+        const request = context.switchToHttp().getRequest();
+        const token = this.extractTokenFromHeader(request);
+
+        if (!token) {
+            throw new UnauthorizedException();
+        }
+
+        try {
+            const payload = await this.jwtService.verifyAsync(token);
+            request['user'] = payload; // Attach user to request
+            return true;
+        } catch {
+            throw new UnauthorizedException();
+        }
+    }
+
+    private extractTokenFromHeader(request: any): string | undefined {
+        const [type, token] = request.headers.authorization?.split(' ') ?? [];
+        return type === 'Bearer' ? token : undefined;
+    }
+}
+```
+
+**Key Points:**
+
+- `rootPath: true` places MCP at `/mcp` (requires `exclude` in `setGlobalPrefix`)
+- `rootPath: false` (default) places MCP at `/{globalPrefix}/mcp`
+- **Playground (`/mcp/playground`) is always public** - no authentication required
+- **Other MCP endpoints (`/mcp`, `/mcp/batch`) adapt to application-level auth**
+- Use `MCP_PUBLIC_KEY` constant to check for public routes in your guards
+- Application-level guards, interceptors, and middleware apply to all MCP endpoints
+- You can implement different auth strategies for MCP vs API endpoints
+
+**Custom Public Metadata Key**
+
+If your application already uses a different metadata key for public routes (e.g., `IS_PUBLIC_KEY`), you can configure MCP to use the same key:
+
+```typescript
+MCPModule.forRoot({
+    serverInfo: { name: 'my-server', version: '1.0.0' },
+    publicMetadataKey: 'IS_PUBLIC_KEY', // Use your app's existing key
+});
+```
+
+This ensures the playground uses your application's standard public route convention.
 
 ### Feature Module Registration
 

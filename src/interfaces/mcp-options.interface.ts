@@ -33,6 +33,33 @@ export interface MCPModuleOptions {
     globalPrefix?: string;
 
     /**
+     * Use root-level path for MCP endpoints (bypasses application global prefix)
+     * When true, MCP endpoints will be at /mcp regardless of app.setGlobalPrefix()
+     *
+     * **Important**: You must configure your application to exclude MCP paths from the global prefix:
+     * ```typescript
+     * app.setGlobalPrefix('v1', {
+     *     exclude: ['/mcp(.*)'] // Exclude all MCP endpoints
+     * });
+     * ```
+     *
+     * Example with app.setGlobalPrefix('v1') and exclude configured:
+     * - rootPath: true → /mcp, /mcp/batch, /mcp/playground
+     * - rootPath: false → /v1/mcp, /v1/mcp/batch, /v1/mcp/playground
+     *
+     * Application-level guards, interceptors, and middleware will still apply to /mcp routes.
+     * @default false
+     */
+    rootPath?: boolean;
+
+    /**
+     * Metadata key for marking routes that should bypass authentication
+     * The playground endpoint is automatically marked as public
+     * @default 'isPublic'
+     */
+    publicMetadataKey?: string;
+
+    /**
      * Enable request/response logging
      * @deprecated Use logLevel instead for more granular control
      */
